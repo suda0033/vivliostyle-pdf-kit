@@ -1,0 +1,397 @@
+@charset "UTF-8";
+
+/* ============================================================
+   テーマB: フォーマル版
+   白黒・本文明朝体。官公庁・取引先への提出文書を想定した
+   落ち着いた紙の文書らしい佇まい。
+   ============================================================ */
+
+@page {
+  size: A4;
+  margin: 24mm 20mm 22mm;
+
+  @top-center {
+    content: string(chapter-title);
+    color: #555555;
+    font-family: "Yu Mincho", "YuMincho", "MS PMincho", serif;
+    font-size: 8.5pt;
+  }
+
+  @bottom-center {
+    content: "— " counter(page) " —";
+    color: #555555;
+    font-size: 9pt;
+  }
+}
+
+@page :first {
+  @top-center {
+    content: "";
+  }
+
+  @bottom-center {
+    content: "";
+  }
+}
+
+:root {
+  font-family: "Yu Mincho", "YuMincho", "MS PMincho", serif;
+  color: #1a1a1a;
+  line-height: 1.85;
+  widows: 2;
+  orphans: 2;
+}
+
+body {
+  margin: 0;
+  font-size: 10.5pt;
+  counter-reset: chapter;
+}
+
+a {
+  color: #1a1a1a;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+/* 表紙 */
+
+.cover {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 230mm;
+  text-align: center;
+  break-after: page;
+}
+
+.cover h1 {
+  margin: 0 0 22mm;
+  padding: 6mm 0;
+  border-top: 1pt solid #1a1a1a;
+  border-bottom: 1pt solid #1a1a1a;
+  color: #1a1a1a;
+  font-size: 24pt;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  line-height: 1.4;
+}
+
+.cover p {
+  margin: 1mm 0;
+  text-align: center;
+}
+
+/* 目次 */
+
+.toc {
+  break-before: page;
+  break-after: page;
+}
+
+.toc-list,
+.toc-list ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.toc-list li {
+  margin: 2mm 0;
+}
+
+.toc-list .toc-level-2 {
+  margin-left: 8mm;
+}
+
+.toc-list .toc-level-3 {
+  margin-left: 16mm;
+  font-size: 9.8pt;
+}
+
+.toc-list .toc-level-4 {
+  margin-left: 24mm;
+  font-size: 9.4pt;
+}
+
+.toc-list a {
+  color: #1a1a1a;
+  text-decoration: none;
+}
+
+.toc-list a::after {
+  content: leader(".") target-counter(attr(href), page);
+  color: #555555;
+}
+
+.toc-number {
+  display: inline-block;
+  min-width: 16mm;
+  font-variant-numeric: tabular-nums;
+}
+
+.toc-title {
+  padding-right: 2mm;
+}
+
+/* 章番号カウンタ */
+
+.chapter {
+  break-before: page;
+}
+
+.chapter h1 {
+  string-set: chapter-title content(text);
+}
+
+.chapter:not(.unnumbered) {
+  counter-increment: chapter;
+  counter-reset: section;
+}
+
+.chapter:not(.unnumbered) h1::before {
+  content: "第" counter(chapter) "章";
+  display: block;
+  margin-bottom: 2mm;
+  font-size: 12pt;
+  font-weight: 600;
+  letter-spacing: 0.3em;
+}
+
+.chapter:not(.unnumbered) h2 {
+  counter-increment: section;
+  counter-reset: subsection;
+}
+
+.chapter:not(.unnumbered) h2::before {
+  content: counter(chapter) "." counter(section) " ";
+  font-variant-numeric: tabular-nums;
+}
+
+.chapter:not(.unnumbered) h3 {
+  counter-increment: subsection;
+  counter-reset: subsubsection;
+}
+
+.chapter:not(.unnumbered) h3::before {
+  content: counter(chapter) "." counter(section) "." counter(subsection) " ";
+  font-variant-numeric: tabular-nums;
+}
+
+.chapter:not(.unnumbered) h4 {
+  counter-increment: subsubsection;
+}
+
+.chapter:not(.unnumbered) h4::before {
+  content: counter(chapter) "." counter(section) "." counter(subsection) "." counter(subsubsection) " ";
+  font-variant-numeric: tabular-nums;
+}
+
+/* 見出し(ゴシックで引き締める) */
+
+h1,
+h2,
+h3,
+h4 {
+  color: #1a1a1a;
+  font-family: "Yu Gothic", "YuGothic", "Meiryo", sans-serif;
+  font-weight: 700;
+  line-height: 1.4;
+  break-after: avoid;
+}
+
+h1 {
+  margin: 0 0 12mm;
+  padding-bottom: 4mm;
+  border-bottom: 0.5pt solid #1a1a1a;
+  font-size: 18pt;
+}
+
+h2 {
+  margin: 10mm 0 4mm;
+  padding-bottom: 1.5mm;
+  border-bottom: 0.5pt solid #999999;
+  font-size: 13.5pt;
+}
+
+h3 {
+  margin: 7mm 0 3mm;
+  font-size: 11.5pt;
+}
+
+h4 {
+  margin: 5mm 0 2mm;
+  font-size: 10.5pt;
+}
+
+/* 本文 */
+
+p {
+  margin: 0 0 4mm;
+  text-align: justify;
+}
+
+ul,
+ol {
+  margin: 0 0 4mm 7mm;
+  padding: 0;
+}
+
+li {
+  margin: 1.2mm 0;
+}
+
+blockquote {
+  margin: 4mm 6mm 5mm;
+  padding: 2mm 4mm;
+  border-left: 1pt solid #1a1a1a;
+  color: #333333;
+  font-size: 10pt;
+}
+
+blockquote p {
+  margin-bottom: 2mm;
+}
+
+hr {
+  margin: 7mm auto;
+  border: 0;
+  border-top: 0.5pt solid #1a1a1a;
+  width: 40%;
+}
+
+/* 表: 罫線は水平線主体の帳票調 */
+
+table {
+  width: 100%;
+  margin: 4mm 0 7mm;
+  border-collapse: collapse;
+  border-top: 1.2pt solid #1a1a1a;
+  border-bottom: 1.2pt solid #1a1a1a;
+  font-size: 9.5pt;
+}
+
+thead {
+  display: table-header-group;
+}
+
+tr {
+  break-inside: avoid;
+}
+
+th,
+td {
+  padding: 2mm 3mm;
+  border: 0;
+  border-bottom: 0.4pt solid #999999;
+  vertical-align: top;
+  overflow-wrap: anywhere;
+}
+
+th {
+  border-bottom: 0.75pt solid #1a1a1a;
+  font-family: "Yu Gothic", "YuGothic", "Meiryo", sans-serif;
+  font-weight: 700;
+}
+
+/* コード(モノクロ) */
+
+pre,
+code {
+  font-family: "Cascadia Mono", "Consolas", "Courier New", monospace;
+}
+
+code {
+  padding: 0.1em 0.25em;
+  background: #f2f2f2;
+  font-size: 0.92em;
+}
+
+pre {
+  margin: 4mm 0 6mm;
+  padding: 3mm 4mm;
+  border: 0.5pt solid #999999;
+  background: #fafafa;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 8.7pt;
+  line-height: 1.5;
+}
+
+pre code {
+  padding: 0;
+  background: transparent;
+  font-size: inherit;
+}
+
+/* シンタックスハイライト(グレースケール) */
+
+.token.comment,
+.token.prolog,
+.token.cdata {
+  color: #777777;
+  font-style: italic;
+}
+
+.token.keyword,
+.token.boolean,
+.token.builtin,
+.token.important {
+  color: #1a1a1a;
+  font-weight: 700;
+}
+
+.token.string,
+.token.char,
+.token.attr-value {
+  color: #444444;
+}
+
+.token.function,
+.token.class-name {
+  color: #1a1a1a;
+  text-decoration: underline;
+  text-decoration-color: #bbbbbb;
+}
+
+.token.operator,
+.token.punctuation {
+  color: #666666;
+}
+
+/* 図 */
+
+img,
+svg {
+  max-width: 100%;
+  height: auto;
+  break-inside: avoid;
+}
+
+figure {
+  margin: 4mm 0 6mm;
+  text-align: center;
+  break-inside: avoid;
+}
+
+figcaption {
+  margin-top: 2mm;
+  color: #555555;
+  font-size: 9pt;
+}
+
+/* 注記 */
+
+.note {
+  margin: 5mm 0;
+  padding: 3mm 4mm;
+  border: 0.5pt solid #1a1a1a;
+  background: #ffffff;
+}
+
+.note p:first-child::before {
+  content: "注記: ";
+  font-family: "Yu Gothic", "YuGothic", "Meiryo", sans-serif;
+  font-weight: 700;
+}
