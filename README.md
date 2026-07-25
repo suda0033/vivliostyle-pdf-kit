@@ -18,7 +18,7 @@ docs/
 └── scripts/             # ビルドスクリプト
 ```
 
-前提: Windows + PowerShell + Node.js 20以降。
+前提: Windows + PowerShell + Node.js 22.12以降(最新LTS推奨)。
 
 ## それ以外のフォルダ
 

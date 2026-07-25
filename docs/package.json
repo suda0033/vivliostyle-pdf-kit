@@ -4,7 +4,7 @@
   "private": true,
   "type": "commonjs",
   "engines": {
-    "node": ">=20"
+    "node": ">=22.12"
   },
   "scripts": {
     "setup": "npm ci",
@@ -13,6 +13,6 @@
   },
   "devDependencies": {
     "@mermaid-js/mermaid-cli": "11.16.0",
-    "@vivliostyle/cli": "9.9.0"
+    "@vivliostyle/cli": "11.1.0"
   }
 }

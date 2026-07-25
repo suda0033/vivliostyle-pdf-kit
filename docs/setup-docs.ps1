@@ -10,7 +10,7 @@ function Test-CommandExists {
 Write-Host "Vivliostyle PDF文書化環境のセットアップを開始します。"
 
 if (-not (Test-CommandExists "node")) {
-    Write-Error "Node.jsが見つかりません。Node.js 20以降のLTS版をインストールしてから再実行してください。"
+    Write-Error "Node.jsが見つかりません。Node.js 22.12以降のLTS版をインストールしてから再実行してください。"
 }
 
 if (-not (Test-CommandExists "npm")) {

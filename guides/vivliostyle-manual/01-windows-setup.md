@@ -21,7 +21,7 @@ Vivliostyleを使って、Markdown文書をPDF化するためのWindows向け環
 | エディタ | Markdown、CSS、設定ファイルを編集する |
 | PowerShell | コマンドを実行する |
 
-Node.jsは20以降を推奨します。
+Node.jsは22.12以降(最新LTS)を推奨します。
 
 ## Node.jsをインストールする
 
