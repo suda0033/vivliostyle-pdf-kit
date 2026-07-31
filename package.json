@@ -8,6 +8,7 @@
     "preview": "vivliostyle preview",
     "mermaid": "chcp 65001 > nul && mmdc -i samples/diagrams/ai-driven-workflow.mmd -o samples/assets/ai-driven-workflow.svg -b transparent",
     "slides:build": "vivliostyle build -c vivliostyle.slides.config.js",
+    "header": "vivliostyle build -c vivliostyle.header.config.js",
     "spec:bundle": "node scripts/build-spec.js",
     "spec:build": "npm run spec:bundle && vivliostyle build -c vivliostyle.spec.config.js",
     "spec": "npm run spec:build"

@@ -69,6 +69,48 @@ PDFに含めるには、`document.config.json` の `files` に追加します。
 
 Mermaid図は原稿に ```` ```mermaid ```` のコードブロックとして直接書けば、PDF生成時に自動でSVGに変換されます。
 
+## ページヘッダーに表を入れる(オプション)
+
+各ページの上部余白に、プロジェクト名や作成者などをまとめた表を繰り返し表示できます。
+スタイルは `styles/header-table.css` に用意済みで、次の2つの修正で有効になります。
+
+1. `vivliostyle.config.js` の `theme` に `styles/header-table.css` を追加します。
+
+   ```js
+   theme: ['styles/document.css', 'styles/header-table.css'],
+   ```
+
+2. `document.config.json` の `files` で**先頭にある原稿ファイル**(通常は `manuscript/00-cover.md`)の先頭に、ヘッダー用の表を追加します。内容は自分の文書に合わせて書き換えてください。
+
+   ```html
+   <header class="page-header">
+     <table>
+       <tbody>
+         <tr>
+           <th>プロジェクト名</th>
+           <td>受注連携システム</td>
+           <th>文書番号</th>
+           <td>SPEC-2026-001</td>
+         </tr>
+         <tr>
+           <th>作成者</th>
+           <td>開発チーム</td>
+           <th>版数</th>
+           <td>0.1</td>
+         </tr>
+       </tbody>
+     </table>
+   </header>
+   ```
+
+あとは `.\build-pdf.ps1` を実行すると、2ページ目以降の上部にこの表が入ります。
+表紙(1ページ目)には表示されません。
+
+調整するときの注意:
+
+- 表の行数を増やしたら、`styles/header-table.css` の `@page` の `margin-top: 34mm` も増やします。足りないと表が本文に重なります。
+- 表の幅は `styles/header-table.css` の `.page-header table` の `width: 174mm`(A4幅210mm − 左右余白18mm×2)で指定しています。`styles/document.css` のページ余白を変えたらここも合わせます。
+
 ## 基本ルール
 
 - 内容を直す場合は `manuscript/` のMarkdownを編集します。

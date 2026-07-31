@@ -1,0 +1,59 @@
+@charset "UTF-8";
+
+/*
+ * ページヘッダーに表を表示するためのスタイル。
+ * document.css の後に theme として読み込むこと(単体では使わない)。
+ *
+ * 仕組み:
+ *   1. 本文中の .page-header を running element にして流れから取り除く
+ *   2. @page の @top-center で element(pageHeader) として各ページに描画する
+ */
+
+.page-header {
+  position: running(pageHeader);
+}
+
+@page {
+  /* ヘッダー表(2行 ≒ 12mm)+ 本文との間隔ぶん、上余白を広げる */
+  margin-top: 34mm;
+
+  @top-center {
+    content: element(pageHeader);
+    vertical-align: bottom;
+    padding-bottom: 4mm;
+  }
+}
+
+/* 表紙にはヘッダーを表示しない */
+@page :first {
+  @top-center {
+    content: none;
+  }
+}
+
+.page-header table {
+  /* A4 幅 210mm − 左右余白 18mm ×2 = 174mm。余白を変えたらここも合わせる */
+  width: 174mm;
+  margin: 0;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: 8pt;
+  line-height: 1.4;
+}
+
+.page-header th,
+.page-header td {
+  padding: 1.2mm 2mm;
+  border: 0.5pt solid #b7c4cf;
+  vertical-align: middle;
+  overflow-wrap: anywhere;
+}
+
+.page-header th {
+  width: 24mm;
+  background: #e8f0f5;
+  color: #17324d;
+  font-weight: 700;
+  text-align: left;
+  white-space: nowrap;
+}

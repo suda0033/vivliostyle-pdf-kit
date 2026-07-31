@@ -34,4 +34,4 @@ docs/
 | `guides/` | Vivliostyle利用メモ |
 | `plan/` | 検証計画 |
 
-ルートでのサンプルビルドは `npm install` 後、`npm run build`(単一文書)、`npm run spec`(機能仕様書)、`npm run slides:build`(スライド)を実行します。
+ルートでのサンプルビルドは `npm install` 後、`npm run build`(単一文書)、`npm run spec`(機能仕様書)、`npm run header`(ページヘッダーに表を入れるサンプル)、`npm run slides:build`(スライド)を実行します。
