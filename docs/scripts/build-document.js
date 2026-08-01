@@ -178,13 +178,22 @@ const bundledParts = [
   '',
 ];
 
+// 目次ページの挿入位置。"tocAfter" で指定したファイルの直後、
+// 未指定なら先頭ファイルの直後に入れる。"toc": false なら挿入しない。
+const tocAfterFile = config.tocAfter || config.files[0].file;
+if (
+  config.toc !== false &&
+  !config.files.some((entry) => entry.file === tocAfterFile)
+) {
+  throw new Error(`"tocAfter" file not found in files: ${tocAfterFile}`);
+}
+
 for (const entry of config.files) {
   const markdown = readSource(entry);
   const fileDir = path.dirname(path.join(sourceDir, entry.file));
   bundledParts.push(processMarkdown(markdown, entry, fileDir), '');
 
-  // トップレベルの "toc": false で目次ページ自体を省略できる(未指定なら出す)
-  if (config.toc !== false && entry.file === config.files[0].file) {
+  if (config.toc !== false && entry.file === tocAfterFile) {
     bundledParts.push('__TOC__', '');
   }
 }
