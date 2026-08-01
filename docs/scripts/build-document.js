@@ -183,7 +183,8 @@ for (const entry of config.files) {
   const fileDir = path.dirname(path.join(sourceDir, entry.file));
   bundledParts.push(processMarkdown(markdown, entry, fileDir), '');
 
-  if (entry.file === config.files[0].file) {
+  // トップレベルの "toc": false で目次ページ自体を省略できる(未指定なら出す)
+  if (config.toc !== false && entry.file === config.files[0].file) {
     bundledParts.push('__TOC__', '');
   }
 }
