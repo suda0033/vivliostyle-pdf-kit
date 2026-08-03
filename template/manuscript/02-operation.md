@@ -4,18 +4,34 @@
 
 ## 初回セットアップ
 
-PowerShellで文書フォルダへ移動し、次を実行します。
+ターミナルで文書フォルダへ移動し、次を実行します。
+
+Windows(PowerShell):
 
 ```powershell
 .\setup-docs.ps1
+```
+
+Linux・Mac:
+
+```bash
+./setup-docs.sh
 ```
 
 ## PDF生成
 
 Markdownを編集した後、次を実行します。
 
+Windows(PowerShell):
+
 ```powershell
 .\build-pdf.ps1
+```
+
+Linux・Mac:
+
+```bash
+./build-pdf.sh
 ```
 
 ## 確認項目

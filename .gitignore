@@ -2,5 +2,5 @@ node_modules/
 .vivliostyle/
 tmp/
 spec-bundle.md
-samples/spec/assets/generated/
-docs/dist/
+dev/samples/spec/assets/generated/
+template/dist/
