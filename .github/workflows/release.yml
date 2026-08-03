@@ -1,0 +1,31 @@
+# v で始まるタグ(例: v1.0.0)をpushすると、template/ をzip化してReleaseに添付するワークフロー。
+# 例:
+#   git tag v1.0.0
+#   git push origin v1.0.0
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+# Releaseの作成にはリポジトリへの書き込み権限が必要
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      # 生成物・依存パッケージはzipに含めない
+      - name: Create template.zip
+        run: |
+          cd template
+          zip -r ../template.zip . -x "node_modules/*" ".vivliostyle/*" "dist/*"
+
+      - name: Create GitHub Release with template.zip
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" template.zip --title "$GITHUB_REF_NAME" --generate-notes
