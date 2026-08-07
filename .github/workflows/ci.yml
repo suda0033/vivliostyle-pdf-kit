@@ -18,12 +18,8 @@ jobs:
         with:
           node-version: 22
 
-      # ubuntuランナーには日本語フォントがなく、入れないとPDFの日本語が全て□(豆腐)になる
-      - name: Install Japanese fonts
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y fonts-noto-cjk
-
+      # 日本語フォントはキット同梱のNoto Sans JP(fonts/)を使うため、
+      # ランナーへのフォントインストールは不要
       - name: Setup
         working-directory: template
         run: ./setup-docs.sh
@@ -37,5 +33,33 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: template-sample-pdf
+          path: template/dist/*.pdf
+          retention-days: 14
+
+  # 最小構成のLinux(node:22-slim、日本語フォントなし・Chromium前提ライブラリなし)でも、
+  # setup-docs.shの自動インストールと同梱フォント(fonts/Noto Sans JP)だけで
+  # PDF生成まで通ることを検証するジョブ。
+  build-template-minimal:
+    runs-on: ubuntu-latest
+    container: node:22-slim
+    steps:
+      # actions/checkoutに必要な最小限のツールを入れる
+      - name: Install git
+        run: apt-get update && apt-get install -y --no-install-recommends git ca-certificates
+
+      - uses: actions/checkout@v7
+
+      - name: Setup
+        working-directory: template
+        run: ./setup-docs.sh
+
+      - name: Build PDF
+        working-directory: template
+        run: ./build-pdf.sh
+
+      - name: Upload generated PDF
+        uses: actions/upload-artifact@v7
+        with:
+          name: template-minimal-linux-pdf
           path: template/dist/*.pdf
           retention-days: 14

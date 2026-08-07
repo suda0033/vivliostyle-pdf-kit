@@ -3,6 +3,12 @@
   "author": "開発チーム",
   "language": "ja",
   "size": "A4",
+  "fonts": {
+    "family": "Noto Sans JP",
+    "faces": [
+      { "file": "fonts/NotoSansJP.ttf", "weight": "100 900" }
+    ]
+  },
   "sourceDir": "manuscript",
   "output": "dist/project-document.pdf",
   "files": [

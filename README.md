@@ -10,18 +10,19 @@ Markdown原稿を[Vivliostyle](https://vivliostyle.org/)でPDF化するための
 
 セットアップとPDF生成の手順は [template/README.md](template/README.md) を参照してください。
 
-```
+```text
 template/
 ├── README.md            # 利用手順
 ├── setup-docs.ps1       # 初回セットアップ(Windows / PowerShell)
 ├── build-pdf.ps1        # PDF生成(Windows / PowerShell)
 ├── setup-docs.sh        # 初回セットアップ(Linux・Mac / シェル)
 ├── build-pdf.sh         # PDF生成(Linux・Mac / シェル)
-├── document.config.json # 文書タイトル、出力先、結合順
+├── document.config.json # 文書タイトル、出力先、結合順、フォント
 ├── manuscript/          # Markdown原稿
 ├── assets/              # 画像
+├── fonts/               # 文書で使うフォント(Noto Sans JPを同梱)
 ├── styles/document.css  # PDFの見た目
-└── scripts/             # ビルドスクリプト
+└── scripts/             # ビルドスクリプト、Chromium前提ライブラリの確認
 ```
 
 前提: Node.js 22.12以降(最新LTS推奨)。Windowsでは `.ps1`(PowerShell)、Linux・Macでは `.sh` のスクリプトを使います。

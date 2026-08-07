@@ -59,6 +59,18 @@ function rewriteImagePaths(line, fileDir) {
     );
 }
 
+// rootユーザー(Dockerコンテナ等)ではChromiumのサンドボックスが使えず
+// mmdcが起動に失敗するため、サンドボックスを無効にした設定を渡す
+function mermaidPuppeteerArgs() {
+  if (process.platform !== 'linux' || typeof process.getuid !== 'function' || process.getuid() !== 0) {
+    return [];
+  }
+  const configFile = path.join(generatedDir, 'puppeteer-config.json');
+  fs.mkdirSync(generatedDir, { recursive: true });
+  fs.writeFileSync(configFile, JSON.stringify({ args: ['--no-sandbox'] }) + '\n', 'utf8');
+  return ['-p', toPosixPath(path.relative(root, configFile))];
+}
+
 function renderMermaid(source, sourceName) {
   fs.mkdirSync(generatedDiagramDir, { recursive: true });
 
@@ -74,7 +86,7 @@ function renderMermaid(source, sourceName) {
   const npxCommand = process.platform === 'win32' ? 'npx.cmd' : 'npx';
   execFileSync(
     npxCommand,
-    ['mmdc', '-i', mmdPath, '-o', svgPath, '-b', 'transparent'],
+    ['mmdc', '-i', mmdPath, '-o', svgPath, '-b', 'transparent', ...mermaidPuppeteerArgs()],
     { cwd: root, stdio: 'inherit', shell: process.platform === 'win32' },
   );
 
@@ -162,6 +174,53 @@ function buildToc() {
   return lines.join('\n');
 }
 
+// document.config.jsonの"fonts"設定から、@font-face定義と本文フォントの
+// 上書きを含む<style>ブロックを生成する。スタイルシート(styles/document.css)より
+// 文書内の<style>が後に適用されるため、font-familyの指定が優先される。
+const FONT_FORMATS = {
+  '.ttf': 'truetype',
+  '.otf': 'opentype',
+  '.woff': 'woff',
+  '.woff2': 'woff2',
+};
+
+function buildFontStyle(fonts) {
+  if (!fonts) {
+    return null;
+  }
+  if (typeof fonts.family !== 'string' || fonts.family.trim() === '') {
+    throw new Error('document.config.json の "fonts.family" にフォント名を文字列で指定してください。');
+  }
+  const lines = ['<style>'];
+  for (const face of fonts.faces ?? []) {
+    if (!face || typeof face.file !== 'string') {
+      throw new Error('document.config.json の "fonts.faces" の各要素には "file" が必要です。');
+    }
+    const absolute = path.resolve(root, face.file);
+    if (!fs.existsSync(absolute)) {
+      throw new Error(`フォントファイルが見つかりません: ${face.file}`);
+    }
+    const url = toPosixPath(path.relative(generatedDir, absolute));
+    const format = FONT_FORMATS[path.extname(face.file).toLowerCase()];
+    const family = typeof face.family === 'string' && face.family.trim() !== '' ? face.family : fonts.family;
+    lines.push('@font-face {');
+    lines.push(`  font-family: ${JSON.stringify(family)};`);
+    lines.push(`  src: url(${JSON.stringify(url)})${format ? ` format(${JSON.stringify(format)})` : ''};`);
+    if (face.weight !== undefined) {
+      lines.push(`  font-weight: ${face.weight};`);
+    }
+    if (face.style !== undefined) {
+      lines.push(`  font-style: ${face.style};`);
+    }
+    lines.push('}');
+  }
+  lines.push(
+    `:root { font-family: ${JSON.stringify(fonts.family)}, "Yu Gothic", "YuGothic", "Meiryo", sans-serif; }`,
+  );
+  lines.push('</style>');
+  return lines.join('\n');
+}
+
 function readSource(entry) {
   const fullPath = path.join(sourceDir, entry.file);
   if (!fs.existsSync(fullPath)) {
@@ -177,6 +236,11 @@ const bundledParts = [
   '---',
   '',
 ];
+
+const fontStyle = buildFontStyle(config.fonts);
+if (fontStyle) {
+  bundledParts.push(fontStyle, '');
+}
 
 // 目次ページの挿入位置。"tocAfter" で指定したファイルの直後、
 // 未指定なら先頭ファイルの直後に入れる。"toc": false なら挿入しない。

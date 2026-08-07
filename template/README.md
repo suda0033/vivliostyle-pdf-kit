@@ -27,6 +27,10 @@ Linux・Mac:
 Node.jsが入っていることを確認し、必要なnpmパッケージをインストールします。
 Mermaid図のレンダリングにChromiumを含むパッケージを使うため、初回インストールはサイズが大きく(数百MB)、時間がかかることがあります。
 
+Linuxでは、PDF生成に使うChromiumが必要とする共有ライブラリ(libnss3など)が揃っているかも確認します。最小構成のLinux(Dockerコンテナ等)で不足している場合、Debian/Ubuntu系では自動でインストールを試みます(sudoのパスワードを求められることがあります)。その他のディストリビューションでは不足ライブラリの一覧と対処方法を表示します。
+
+また、Linuxでは `fonts/` のフォント(同梱のNoto Sans JP)をユーザーフォントとして登録します。これはMermaid図の文字化け対策です(後述の「フォントを指定する」を参照)。
+
 ## PDF更新
 
 Markdown原稿を編集した後、次を実行します。
@@ -54,8 +58,9 @@ VivliostyleはPDF生成時にローカルサーバーを使うため、複数の
 | --- | --- |
 | `manuscript/` | Markdown原稿 |
 | `assets/` | 画像、SVG、Mermaid元ファイル |
+| `fonts/` | 文書で使うフォント(Noto Sans JPを同梱) |
 | `styles/document.css` | PDFの見た目 |
-| `document.config.json` | 文書タイトル、出力先、結合順 |
+| `document.config.json` | 文書タイトル、出力先、結合順、フォント |
 
 ## Markdownファイルを追加した場合
 
@@ -109,6 +114,54 @@ PDFに含めるには、`document.config.json` の `files` に追加します。
 ```
 
 Mermaid図は原稿に ```` ```mermaid ```` のコードブロックとして直接書けば、PDF生成時に自動でSVGに変換されます。
+
+## フォントを指定する
+
+既定では、同梱の[Noto Sans JP](https://fonts.google.com/noto/specimen/Noto+Sans+JP)(`fonts/NotoSansJP.ttf`、ライセンスは `fonts/OFL.txt`)を使う設定になっています。フォントはPDFに埋め込まれるため、Windows・Mac・Linuxのどこでビルドしても同じ見た目になり、日本語フォントの無い環境でも文字化けしません。
+
+フォントは `document.config.json` の `"fonts"` で変えられます。
+
+### 別のフォントファイルに差し替える
+
+1. フォントファイル(`.ttf` / `.otf` / `.woff` / `.woff2`)を `fonts/` フォルダに置きます。
+2. `document.config.json` の `"fonts"` を書き換えます。
+
+   ```json
+   {
+     "title": "プロジェクト文書",
+     "fonts": {
+       "family": "BIZ UDGothic",
+       "faces": [
+         { "file": "fonts/BIZUDGothic-Regular.ttf", "weight": 400 },
+         { "file": "fonts/BIZUDGothic-Bold.ttf", "weight": 700 }
+       ]
+     },
+     ...
+   }
+   ```
+
+   - `family`: 文書全体で使うフォント名。
+   - `faces`: 使うフォントファイルの一覧。`weight` は `400`(標準)や `700`(太字)など。太字用ファイルも指定しておくと、見出しや `**強調**` に本物の太字が使われます。斜体フォントは `"style": "italic"` を追加します。同梱のNoto Sans JPのようなバリアブルフォントは `"weight": "100 900"` のように範囲で指定します。
+3. `./build-pdf.ps1`(Linux・Macは `./build-pdf.sh`)で再生成します。
+
+### OSにインストール済みのフォントを名前で指定する
+
+フォントファイルを同梱せず、インストール済みのフォントを名前だけで指定することもできます。この場合 `faces` は不要です。
+
+```json
+{
+  "fonts": { "family": "游明朝" }
+}
+```
+
+### OS既定のフォントに戻す
+
+`"fonts"` をまるごと削除すると、OSにインストール済みのフォント(Windowsなら游ゴシック)で組版されます。この場合、日本語フォントの無いLinuxでは文字化けするので注意してください。
+
+### 注意点
+
+- Mermaid図の中の文字は、この指定ではなく**システムフォント**で描画されます。日本語フォントの無いLinuxでは、`./setup-docs.sh` の実行時に `fonts/` のフォントがユーザーフォントとして登録され、Mermaid図にも反映されます。フォントを差し替えたときは `./setup-docs.sh` を再実行してください。
+- フォントファイルには再配布条件があります。別のフォントをコミットして配布する場合はライセンスを確認してください。Noto Sans JPや[BIZ UDゴシック](https://fonts.google.com/specimen/BIZ+UDGothic)はSIL OFLで再配布できます。
 
 ## ページヘッダーに表を入れる(オプション)
 

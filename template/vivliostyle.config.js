@@ -11,7 +11,8 @@ module.exports = {
   workspaceDir: '.vivliostyle/workspace',
   // 生成したMermaid SVGは隠しフォルダ(.vivliostyle/)配下にあるため、
   // 既定のアセットコピーから漏れる。明示的に含める。
+  // fonts/ は@font-face(document.config.jsonの"fonts"指定)から参照される。
   copyAsset: {
-    includes: ['.vivliostyle/generated/diagrams/**/*.svg'],
+    includes: ['.vivliostyle/generated/diagrams/**/*.svg', 'fonts/**/*'],
   },
 };

@@ -24,6 +24,10 @@ if [ ! -d "node_modules" ]; then
     fi
 fi
 
+# Chromiumの前提ライブラリが不足しているとビルドが分かりにくいエラーで失敗するため、
+# 事前に確認する(Linuxのみ。不足時は対処方法を表示して終了する)
+sh scripts/check-chromium-deps.sh
+
 npm run build
 
 echo ""
