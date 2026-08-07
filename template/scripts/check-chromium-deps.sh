@@ -32,6 +32,11 @@ if [ "$(uname -m)" = "aarch64" ]; then
     exit 1
 fi
 
+# Vivliostyle CLIは初回ビルド時にChromiumをzipでダウンロードして展開するため、
+# unzipコマンドが必要(最小構成のLinuxには入っていないことがある)
+NEED_UNZIP=0
+command -v unzip >/dev/null 2>&1 || NEED_UNZIP=1
+
 if ! command -v ldd >/dev/null 2>&1; then
     echo "警告: lddコマンドが無いため、Chromiumの依存ライブラリ確認をスキップします。"
     exit 0
@@ -55,29 +60,37 @@ find_chrome_binary() {
     return 1
 }
 
+CHROME_BIN=""
 if ! CHROME_BIN=$(find_chrome_binary); then
     echo "Chromiumが未ダウンロードのため、依存ライブラリの確認をスキップします(初回ビルド時に自動ダウンロードされます)。"
-    exit 0
 fi
 
 list_missing_libs() {
+    if [ -z "$CHROME_BIN" ]; then
+        return 0
+    fi
     ldd "$CHROME_BIN" 2>/dev/null | awk '/not found/ {print $1}' | sort -u
 }
 
 MISSING=$(list_missing_libs)
-if [ -z "$MISSING" ]; then
-    echo "Chromiumの依存ライブラリはすべて揃っています。"
+if [ -z "$MISSING" ] && [ "$NEED_UNZIP" = "0" ]; then
+    echo "Chromiumの実行に必要なコマンドとライブラリは揃っています。"
     exit 0
 fi
 
-echo "Chromiumの起動に必要な共有ライブラリが不足しています:"
-echo "$MISSING" | sed 's/^/  - /'
+if [ -n "$MISSING" ]; then
+    echo "Chromiumの起動に必要な共有ライブラリが不足しています:"
+    echo "$MISSING" | sed 's/^/  - /'
+fi
+if [ "$NEED_UNZIP" = "1" ]; then
+    echo "Chromiumのダウンロード展開に必要なunzipコマンドが見つかりません。"
+fi
 
 if ! command -v apt-get >/dev/null 2>&1; then
     echo "" >&2
     echo "このディストリビューションでは自動インストールに対応していません(Debian/Ubuntu系のみ対応)。" >&2
-    echo "上記のライブラリを含むパッケージを、お使いのパッケージマネージャでインストールしてください。" >&2
-    echo "例(Fedora/RHEL系): sudo dnf install -y nss nspr atk at-spi2-atk cups-libs libdrm mesa-libgbm alsa-lib pango cairo libXcomposite libXdamage libXrandr libxkbcommon" >&2
+    echo "不足しているコマンド・ライブラリを、お使いのパッケージマネージャでインストールしてください。" >&2
+    echo "例(Fedora/RHEL系): sudo dnf install -y unzip nss nspr atk at-spi2-atk cups-libs libdrm mesa-libgbm alsa-lib pango cairo libXcomposite libXdamage libXrandr libxkbcommon" >&2
     exit 1
 fi
 
@@ -128,13 +141,23 @@ resolve_apt_package() {
     printf '%s' "${1%%|*}"
 }
 
+# インストール対象: ライブラリ不足時はChrome前提パッケージ一式、unzip不足時はunzip
+build_package_list() {
+    PKGS=""
+    if [ -n "$MISSING" ]; then
+        for group in $APT_PACKAGES; do
+            PKGS="$PKGS $(resolve_apt_package "$group")"
+        done
+    fi
+    if [ "$NEED_UNZIP" = "1" ]; then
+        PKGS="$PKGS unzip"
+    fi
+}
+
 if [ "$MODE" = "check" ]; then
     echo "" >&2
     echo "./setup-docs.sh を再実行するか、次のコマンドでインストールしてください:" >&2
-    PKGS=""
-    for group in $APT_PACKAGES; do
-        PKGS="$PKGS $(resolve_apt_package "$group")"
-    done
+    build_package_list
     echo "  sudo apt-get update && sudo apt-get install -y --no-install-recommends$PKGS" >&2
     exit 1
 fi
@@ -155,10 +178,7 @@ fi
 
 echo "不足パッケージをインストールします(Debian/Ubuntu系)。"
 $SUDO apt-get update
-PKGS=""
-for group in $APT_PACKAGES; do
-    PKGS="$PKGS $(resolve_apt_package "$group")"
-done
+build_package_list
 # shellcheck disable=SC2086
 $SUDO apt-get install -y --no-install-recommends $PKGS
 
@@ -170,5 +190,9 @@ if [ -n "$MISSING" ]; then
     echo "お使いのディストリビューションで上記ライブラリを含むパッケージを個別にインストールしてください。" >&2
     exit 1
 fi
+if ! command -v unzip >/dev/null 2>&1; then
+    echo "エラー: unzipのインストールに失敗しました。手動でインストールしてください。" >&2
+    exit 1
+fi
 
-echo "Chromiumの依存ライブラリの準備が完了しました。"
+echo "Chromiumの実行に必要なコマンドとライブラリの準備が完了しました。"
