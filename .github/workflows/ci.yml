@@ -49,13 +49,36 @@ jobs:
 
       - uses: actions/checkout@v7
 
+      # 失敗時の調査用: ログ末尾をジョブサマリー(公開ページで閲覧可能)に出す
       - name: Setup
         working-directory: template
-        run: ./setup-docs.sh
+        shell: bash
+        run: |
+          set -o pipefail
+          ./setup-docs.sh 2>&1 | tee /tmp/setup.log || {
+            {
+              echo '### setup-docs.sh failed'
+              echo '```'
+              tail -n 80 /tmp/setup.log
+              echo '```'
+            } >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          }
 
       - name: Build PDF
         working-directory: template
-        run: ./build-pdf.sh
+        shell: bash
+        run: |
+          set -o pipefail
+          ./build-pdf.sh 2>&1 | tee /tmp/build.log || {
+            {
+              echo '### build-pdf.sh failed'
+              echo '```'
+              tail -n 80 /tmp/build.log
+              echo '```'
+            } >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          }
 
       - name: Upload generated PDF
         uses: actions/upload-artifact@v7
