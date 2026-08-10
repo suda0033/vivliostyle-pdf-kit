@@ -24,6 +24,8 @@ Linux・Mac:
 ./setup-docs.sh
 ```
 
+`Permission denied` になる場合は `sh setup-docs.sh` を実行してください(Windowsでzipを展開してからコピーした場合など、経路によってスクリプトの実行権限が失われることがあります)。
+
 Node.jsが入っていることを確認し、必要なnpmパッケージをインストールします。
 Mermaid図のレンダリングにChromiumを含むパッケージを使うため、初回インストールはサイズが大きく(数百MB)、時間がかかることがあります。
 
@@ -48,6 +50,8 @@ Linux・Mac:
 ```bash
 ./build-pdf.sh
 ```
+
+`Permission denied` になる場合は `sh build-pdf.sh` を実行してください。
 
 PDFは `dist/` に出力されます。
 VivliostyleはPDF生成時にローカルサーバーを使うため、複数のPDF生成コマンドを同時に実行しないでください。
