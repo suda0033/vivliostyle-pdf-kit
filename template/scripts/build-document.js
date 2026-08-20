@@ -96,8 +96,16 @@ function renderMermaid(source, sourceName) {
 
 // コードフェンスを状態管理しながら1ファイル分を処理する。
 // フェンス内は見出し検出・画像パス書き換えの対象外にする。
+//
+// 章の自動生成: <section を含まないファイルでは、h1(# 見出し)ごとに
+// <section class="chapter"> で自動的に囲む(h1 = 章)。
+// <section を自分で書いたファイル(表紙や特殊レイアウト)は手書きを尊重し、
+// 自動生成しない。
 function processMarkdown(markdown, entry, fileDir) {
   const output = [];
+  const autoChapter = !/<section\b/i.test(markdown);
+  const chapterClass = entry.unnumbered ? 'chapter unnumbered' : 'chapter';
+  let sectionOpen = false;
   let fence = null; // { marker, isMermaid } — 開いているフェンス
   let mermaidLines = null;
 
@@ -139,16 +147,33 @@ function processMarkdown(markdown, entry, fileDir) {
 
     const processed = rewriteImagePaths(line, fileDir);
     const heading = /^(#{1,4})\s+(.+)$/.exec(processed);
-    if (heading && entry.toc) {
+    if (heading) {
       const level = heading[1].length;
-      const title = heading[2].trim();
-      const number = nextNumber(level);
-      const id = slugify(title, number);
-      tocItems.push({ level, number, title, id });
-      output.push(`<span id="${id}"></span>`, '', processed);
+      if (autoChapter && level === 1) {
+        if (sectionOpen) {
+          output.push('', '</section>', '');
+        }
+        output.push(`<section class="${chapterClass}">`, '');
+        sectionOpen = true;
+      }
+      if (entry.toc) {
+        const title = heading[2].trim();
+        // unnumbered のファイルは本文の見出しにも番号が付かないため、
+        // 目次側も番号なしにして表示を一致させる
+        const number = entry.unnumbered ? '' : nextNumber(level);
+        const id = slugify(title, number);
+        tocItems.push({ level, number, title, id });
+        output.push(`<span id="${id}"></span>`, '', processed);
+      } else {
+        output.push(processed);
+      }
     } else {
       output.push(processed);
     }
+  }
+
+  if (sectionOpen) {
+    output.push('', '</section>');
   }
 
   return output.join('\n');
@@ -243,13 +268,19 @@ if (fontStyle) {
 }
 
 // 目次ページの挿入位置。"tocAfter" で指定したファイルの直後、
+// "start" なら全ファイルより前(文書の先頭。表紙なし文書用)、
 // 未指定なら先頭ファイルの直後に入れる。"toc": false なら挿入しない。
 const tocAfterFile = config.tocAfter || config.files[0].file;
 if (
   config.toc !== false &&
+  tocAfterFile !== 'start' &&
   !config.files.some((entry) => entry.file === tocAfterFile)
 ) {
   throw new Error(`"tocAfter" file not found in files: ${tocAfterFile}`);
+}
+
+if (config.toc !== false && tocAfterFile === 'start') {
+  bundledParts.push('__TOC__', '');
 }
 
 for (const entry of config.files) {

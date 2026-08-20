@@ -1,4 +1,4 @@
-<section class="cover unnumbered">
+<section class="cover">
 
 # プロジェクト文書
 

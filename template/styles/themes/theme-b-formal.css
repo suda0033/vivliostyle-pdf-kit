@@ -24,13 +24,15 @@
   }
 }
 
-@page :first {
+/* 表紙(.cover)のページだけ柱とページ番号を消す。
+   表紙が無い文書では1ページ目から普通に表示される */
+@page cover {
   @top-center {
-    content: "";
+    content: none;
   }
 
   @bottom-center {
-    content: "";
+    content: none;
   }
 }
 
@@ -57,6 +59,7 @@ a {
 /* 表紙 */
 
 .cover {
+  page: cover;
   display: flex;
   flex-direction: column;
   justify-content: center;

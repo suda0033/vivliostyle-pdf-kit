@@ -11,9 +11,11 @@
   }
 }
 
-@page :first {
+/* 表紙(.cover)のページだけページ番号を消す。
+   表紙が無い文書では1ページ目から普通に番号が出る */
+@page cover {
   @bottom-center {
-    content: "";
+    content: none;
   }
 }
 
@@ -32,6 +34,7 @@ body {
 }
 
 .cover {
+  page: cover;
   display: flex;
   flex-direction: column;
   justify-content: center;

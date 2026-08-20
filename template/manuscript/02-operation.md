@@ -1,5 +1,3 @@
-<section class="chapter">
-
 # PDF更新手順
 
 ## 初回セットアップ
@@ -48,5 +46,3 @@ Linux・Mac:
 PDFを直接編集せず、MarkdownやCSSを更新してから再生成します。
 
 </div>
-
-</section>

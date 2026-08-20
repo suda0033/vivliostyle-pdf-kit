@@ -1,5 +1,3 @@
-<section class="chapter">
-
 # はじめに
 
 この文書は、VivliostyleでPDF化するMarkdown文書のサンプルです。
@@ -13,5 +11,3 @@
 - 開発者
 - レビュアー
 - 文書更新を引き継ぐ担当者
-
-</section>
