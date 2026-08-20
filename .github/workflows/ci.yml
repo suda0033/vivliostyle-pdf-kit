@@ -1,10 +1,10 @@
 # キット(template/)がLinux環境でセットアップ〜PDF生成まで通ることを検証するワークフロー。
-# mainへのpushとPull Requestで自動実行される。Actionsタブから手動実行も可能(workflow_dispatch)。
+# 全ブランチへのpushとPull Requestで自動実行される。Actionsタブから手動実行も可能(workflow_dispatch)。
+# (pull_requestはフォークからのPR用。自リポジトリのブランチはpushで回る)
 name: CI
 
 on:
   push:
-    branches: [main]
   pull_request:
   workflow_dispatch:
 
