@@ -246,6 +246,53 @@ function buildFontStyle(fonts) {
   return lines.join('\n');
 }
 
+// document.config.jsonの"footer"設定から、ページ下部余白に固定文字列を
+// 出す<style>ブロックを生成する。中央はスタイルシート側のページ番号を
+// そのまま使い、"center"を指定した場合のみ上書きする。
+// 表紙(.cover)のページには、ページ番号と同様に表示しない。
+const FOOTER_BOXES = { left: 'bottom-left', center: 'bottom-center', right: 'bottom-right' };
+
+// CSSのcontent文字列として安全な形にエスケープする(改行は空白に置換)
+function toCssString(text) {
+  return `"${text.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/[\r\n]+/g, ' ')}"`;
+}
+
+function buildFooterStyle(footer) {
+  if (!footer) {
+    return null;
+  }
+  const boxes = [];
+  for (const [key, box] of Object.entries(FOOTER_BOXES)) {
+    const text = footer[key];
+    if (text === undefined || text === '') {
+      continue;
+    }
+    if (typeof text !== 'string') {
+      throw new Error(`document.config.json の "footer.${key}" は文字列で指定してください。`);
+    }
+    boxes.push({ box, text });
+  }
+  if (boxes.length === 0) {
+    return null;
+  }
+  const lines = ['<style>', '@page {'];
+  for (const { box, text } of boxes) {
+    lines.push(`  @${box} {`);
+    lines.push(`    content: ${toCssString(text)};`);
+    lines.push('    color: #5b6770;');
+    lines.push('    font-size: 9pt;');
+    lines.push('  }');
+  }
+  lines.push('}', '@page cover {');
+  for (const { box } of boxes) {
+    lines.push(`  @${box} {`);
+    lines.push('    content: none;');
+    lines.push('  }');
+  }
+  lines.push('}', '</style>');
+  return lines.join('\n');
+}
+
 function readSource(entry) {
   const fullPath = path.join(sourceDir, entry.file);
   if (!fs.existsSync(fullPath)) {
@@ -265,6 +312,11 @@ const bundledParts = [
 const fontStyle = buildFontStyle(config.fonts);
 if (fontStyle) {
   bundledParts.push(fontStyle, '');
+}
+
+const footerStyle = buildFooterStyle(config.footer);
+if (footerStyle) {
+  bundledParts.push(footerStyle, '');
 }
 
 // 目次ページの挿入位置。"tocAfter" で指定したファイルの直後、

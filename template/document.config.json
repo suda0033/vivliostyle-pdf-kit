@@ -3,6 +3,10 @@
   "author": "開発チーム",
   "language": "ja",
   "size": "A4",
+  "footer": {
+    "left": "",
+    "right": ""
+  },
   "fonts": {
     "family": "Noto Sans JP",
     "faces": [
