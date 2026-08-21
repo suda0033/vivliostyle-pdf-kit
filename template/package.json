@@ -8,12 +8,13 @@
   },
   "scripts": {
     "setup": "npm ci",
-    "build": "node scripts/build-document.js && vivliostyle build -c vivliostyle.config.js",
+    "build": "node scripts/build-document.js && vivliostyle build -c vivliostyle.config.js && node scripts/add-form-fields.js",
     "preview": "node scripts/build-document.js && vivliostyle preview -c vivliostyle.config.js"
   },
   "devDependencies": {
     "@mermaid-js/mermaid-cli": "11.16.0",
     "@vivliostyle/cli": "11.1.0",
+    "pdf-lib": "^1.17.1",
     "yauzl": "^3.4.0"
   }
 }

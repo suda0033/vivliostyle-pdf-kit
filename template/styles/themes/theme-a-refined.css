@@ -392,3 +392,23 @@ figcaption {
   border-left: 4pt solid #2f6f4e;
   background: #eef6f2;
 }
+
+
+/* ドキュメント情報の表(manuals/OPTIONS.md「ドキュメント情報の表を資料冒頭に入れる」参照)。
+   表はページの先頭に置き、直後の章見出しは改ページせず同じページに続ける */
+.doc-info {
+  break-before: page;
+  margin-top: 0;
+}
+
+.doc-info + .chapter {
+  break-before: auto;
+}
+
+/* PDF入力欄のプレースホルダ。ビルド後処理(scripts/add-form-fields.js)が
+   この位置に入力フィールドを重ねるため、セル内で高さを確保しておく */
+a.pdf-field {
+  display: block;
+  min-height: 7mm;
+  text-decoration: none;
+}
