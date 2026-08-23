@@ -3,7 +3,19 @@ const path = require('node:path');
 const { execFileSync } = require('node:child_process');
 
 const root = process.cwd();
-const config = require(path.join(root, 'document.config.json'));
+// 設定ファイルは既定で document.config.json。環境変数 DOC_CONFIG(ルートからの相対パス)で
+// 別の設定に切り替えられる(build-pdf.ps1 の -Config / build-pdf.sh の第1引数)。
+const configPath = path.resolve(root, process.env.DOC_CONFIG || 'document.config.json');
+const configName = path.relative(root, configPath).split(path.sep).join('/');
+const config = require(configPath);
+
+// "styles": 組版に使うCSSの一覧(任意。未指定なら styles/document.css のみ)。
+// vivliostyle.config.js が theme として読む。ここでは形式だけ検証する。
+if (config.styles !== undefined) {
+  if (!Array.isArray(config.styles) || config.styles.length === 0 || config.styles.some((s) => typeof s !== 'string' || s.trim() === '')) {
+    throw new Error(`${configName} の "styles" はCSSファイルのパスを文字列の配列で指定してください。例: ["styles/document.css", "styles/header-table.css"]`);
+  }
+}
 const sourceDir = path.join(root, config.sourceDir);
 const generatedDir = path.join(root, '.vivliostyle', 'generated');
 const generatedDiagramDir = path.join(generatedDir, 'diagrams');
@@ -214,12 +226,12 @@ function buildFontStyle(fonts) {
     return null;
   }
   if (typeof fonts.family !== 'string' || fonts.family.trim() === '') {
-    throw new Error('document.config.json の "fonts.family" にフォント名を文字列で指定してください。');
+    throw new Error(`${configName} の "fonts.family" にフォント名を文字列で指定してください。`);
   }
   const lines = ['<style>'];
   for (const face of fonts.faces ?? []) {
     if (!face || typeof face.file !== 'string') {
-      throw new Error('document.config.json の "fonts.faces" の各要素には "file" が必要です。');
+      throw new Error(`${configName} の "fonts.faces" の各要素には "file" が必要です。`);
     }
     const absolute = path.resolve(root, face.file);
     if (!fs.existsSync(absolute)) {
@@ -268,7 +280,7 @@ function buildFooterStyle(footer) {
       continue;
     }
     if (typeof text !== 'string') {
-      throw new Error(`document.config.json の "footer.${key}" は文字列で指定してください。`);
+      throw new Error(`${configName} の "footer.${key}" は文字列で指定してください。`);
     }
     boxes.push({ box, text });
   }
