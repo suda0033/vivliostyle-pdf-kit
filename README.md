@@ -14,6 +14,7 @@ Markdown原稿を[Vivliostyle](https://vivliostyle.org/)でPDF化するための
 template/
 ├── README.md            # マニュアルの案内(どのファイルを見ればいいか)
 ├── manuals/             # マニュアル(SETUP: 初回 / USAGE: 日常 / OPTIONS: オプション機能 / SPEC: 詳細仕様)
+├── samples/             # 機能の見本(サンプルごとに1フォルダ、README付き)
 ├── setup-docs.ps1       # 初回セットアップ(Windows / PowerShell)
 ├── build-pdf.ps1        # PDF生成(Windows / PowerShell)
 ├── setup-docs.sh        # 初回セットアップ(Linux・Mac / シェル)

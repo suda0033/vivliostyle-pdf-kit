@@ -98,44 +98,58 @@
 
 ## ドキュメント情報の表を資料冒頭に入れる(PDF入力フォーム付き)
 
-本文1ページ目の冒頭に、プロジェクト名や作成者などをまとめた罫線付きの表を置けます。
+本文1ページ目の冒頭に、プロジェクト名や承認欄などをまとめた罫線付きの表を置けます。
 `pdf-field://` を書いたセルは**入力可能なPDFフォーム**になり、生成後のPDFにビューア(Acrobat Reader・Edge・Chrome等)から記入して保存できます。
 
-最初の本文の原稿ファイル(例: `manuscript/01-overview.md`)の、最初の `# 見出し` より前に次のような表を書き、あとは通常どおりPDFを生成するだけです。内容・列数は自由に変えられます。
+最初の本文の原稿ファイル(例: `manuscript/01-overview.md`)の、最初の `# 見出し` より前に次のように書き、あとは通常どおりPDFを生成するだけです。左に文書情報、右に承認欄という2つの表が横に並びます。内容・列数は自由に変えられます。
+
+動く見本が `samples/` にあります(`doc-info-header/`: ヘッダー表と組み合わせ、`doc-info-version/`: 版数の小箱+2行目に承認欄。ビルド方法は各フォルダの `README.md` を参照)。
 
 ```html
-<table class="doc-info">
-  <tbody>
-    <tr>
-      <th colspan="3">プロジェクト名</th>
-      <th colspan="3">ファイル名</th>
-    </tr>
-    <tr>
-      <td colspan="3">受注連携システム</td>
-      <td colspan="3">project-document.pdf</td>
-    </tr>
-    <tr>
-      <th>作成者</th>
-      <th>作成日</th>
-      <th>更新者</th>
-      <th>更新日</th>
-      <th>確認者</th>
-      <th>確認日</th>
-    </tr>
-    <tr>
-      <td><a class="pdf-field" href="pdf-field://created-by"></a></td>
-      <td><a class="pdf-field" href="pdf-field://created-date"></a></td>
-      <td><a class="pdf-field" href="pdf-field://updated-by"></a></td>
-      <td><a class="pdf-field" href="pdf-field://updated-date"></a></td>
-      <td><a class="pdf-field" href="pdf-field://reviewed-by"></a></td>
-      <td><a class="pdf-field" href="pdf-field://reviewed-date"></a></td>
-    </tr>
-  </tbody>
-</table>
+<div class="doc-info">
+  <table>
+    <tbody>
+      <tr>
+        <th>プロジェクト名</th>
+        <th>ファイル名</th>
+      </tr>
+      <tr>
+        <td>受注連携システム</td>
+        <td>project-document.pdf</td>
+      </tr>
+    </tbody>
+  </table>
+  <table class="doc-info-right">
+    <tbody>
+      <tr>
+        <th>作成</th>
+        <th>更新</th>
+        <th>確認</th>
+      </tr>
+      <tr>
+        <td><a class="pdf-field" href="pdf-field://created-by"></a></td>
+        <td><a class="pdf-field" href="pdf-field://updated-by"></a></td>
+        <td><a class="pdf-field" href="pdf-field://reviewed-by"></a></td>
+      </tr>
+      <tr>
+        <td><a class="pdf-field" href="pdf-field://created-date"></a></td>
+        <td><a class="pdf-field" href="pdf-field://updated-date"></a></td>
+        <td><a class="pdf-field" href="pdf-field://reviewed-date"></a></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 ```
 
 - 記入欄にしたいセルには `<a class="pdf-field" href="pdf-field://名前"></a>` を書きます。`名前` は識別名で紙面には出ません(英数字推奨)。同じ名前のセルは入力値が共有されます。
 - 固定で表示したい値は `<td>` に直接書きます。役割(作成・更新・確認など)の増減は列の増減だけです。
+- 表に付けるクラスで幅と色を組み合わせられます(数値や色は `styles/document.css` の「ドキュメント情報の表」ブロックで調整)。
+  - `doc-info-right`: 幅80mm+赤系の配色(承認欄向け)
+  - `doc-info-small`: 幅26mm(全体の約15%。版数などの小さな箱)
+  - `doc-info-full`: 次の行に送って全幅にする(表が幅を超えた場合も自動で折り返します)
+  - `doc-info-accent`: 赤系の文字色・罫線色だけを付ける
+- 表を1つだけ置きたい場合は、`<div>` を使わず `<table class="doc-info">` 1つで書けます。
+- `<div class="doc-info">` の内側には**空行を入れないでください**(空行があるとそこでHTMLブロックが途切れます)。
 - 表はページの先頭に配置され、直後の章見出しは改ページせず同じページに続きます。
 - ビルドの最後に `Added 6 form field(s) to ...` と表示されれば、入力欄が埋め込まれています(`scripts/add-form-fields.js` が自動実行)。
 - **PDFを再生成すると入力済みの値は消えます。** 記入は文書を確定するビルドの後に。
@@ -146,10 +160,13 @@
 各ページの上部余白に、プロジェクト名や作成者などをまとめた表を繰り返し表示できます。
 スタイルは `styles/header-table.css` に用意済みで、次の2つの修正で有効になります。
 
-1. `vivliostyle.config.js` の `theme` に `styles/header-table.css` を追加します。
+1. `document.config.json` に `"styles"` を追加し、`styles/header-table.css` を含めます。
 
-   ```js
-   theme: ['styles/document.css', 'styles/header-table.css'],
+   ```json
+   {
+     "styles": ["styles/document.css", "styles/header-table.css"],
+     ...
+   }
    ```
 
 2. `document.config.json` の `files` で**先頭にある原稿ファイル**(通常は `manuscript/00-cover.md`)の先頭に、ヘッダー用の表を追加します。内容は自分の文書に合わせて書き換えてください。
@@ -182,3 +199,72 @@
 
 - 表の行数を増やしたら、`styles/header-table.css` の `@page` の `margin-top: 34mm` も増やします。足りないと表が本文に重なります。
 - 表の幅は `styles/header-table.css` の `.page-header table` の `width: 174mm`(A4幅210mm − 左右余白18mm×2)で指定しています。`styles/document.css` のページ余白を変えたらここも合わせます。
+
+## 別の設定ファイルでビルドする
+
+`build-pdf` は既定で `document.config.json` を使いますが、別の設定ファイルを指定してビルドできます。`samples/` のサンプルを試すときや、1つのフォルダで複数の文書を作り分けるときに使います。
+
+Windows(PowerShell):
+
+```powershell
+.\build-pdf.ps1 -Config samples/doc-info-header/document.config.json
+```
+
+Linux・Mac:
+
+```bash
+./build-pdf.sh samples/doc-info-header/document.config.json
+```
+
+- 設定ファイル内のパス(`sourceDir`、`output`、`fonts`、`styles`)は、設定ファイルの場所ではなく**テンプレートのフォルダ基準**で書きます。
+- `output` は文書ごとに別名にしてください(同じだと上書きされます)。
+- 組版に使うCSSは設定の `"styles"` で指定できます(未指定なら `styles/document.css`)。`styles/themes/` のテーマに切り替える場合も、ここで `["styles/themes/theme-b-formal.css"]` のように指定します。
+
+## HTMLとCSSで独自のレイアウトを作る
+
+原稿のMarkdownにはHTMLをそのまま書けます。HTMLにクラス名を付け、そのクラスの見た目を `styles/document.css` に書き足せば、Markdownの標準記法にないレイアウト(横並びの表、色付きの枠、幅を固定した箱など)を自由に作れます。上の「ドキュメント情報の表」や「注意書きボックス」もこの仕組みで作られています。
+
+手順は2つです。
+
+1. 原稿にクラス付きのHTMLを書く(例: 左右2段組)
+
+   ```html
+   <div class="two-columns">
+     <div class="column">
+       左の内容
+     </div>
+     <div class="column highlight">
+       右の内容
+     </div>
+   </div>
+   ```
+
+2. `styles/document.css` の末尾に、そのクラスの見た目を書く
+
+   ```css
+   .two-columns {
+     display: flex;
+     gap: 6mm;
+   }
+
+   .column {
+     flex: 1;
+     padding: 3mm;
+     border: 0.5pt solid #b7c4cf;
+   }
+
+   .column.highlight {
+     flex: 0 0 60mm;
+     color: #7a2e2e;
+     border-color: #c98c8c;
+   }
+   ```
+
+書くときのルール:
+
+- HTMLブロックの**前後には空行**を入れます。逆に、`<div>` で囲んだ**内側には空行を入れない**でください。空行があるとそこでHTMLブロックが途切れ、残りが通常のMarkdownとして処理されます。
+- HTMLブロックの中ではMarkdown記法(`**太字**` や `- 箇条書き`)は効きません。中身もHTMLで書きます。
+- 表は `<table>` で書けば、`styles/document.css` の `table` / `th` / `td` のスタイル(罫線など)が自動で付きます。
+- 入力フォーム(`<a class="pdf-field" href="pdf-field://名前"></a>`)は、どのHTMLの中に書いても動きます。
+- 幅や余白は `mm` で指定すると紙面の寸法どおりになります(A4の本文幅は174mm)。
+- `styles/themes/` のテーマCSSに切り替えて使っている場合は、そのテーマファイルにも同じCSSを書きます。

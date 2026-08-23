@@ -6,9 +6,11 @@
 
 `build-pdf.ps1` / `build-pdf.sh`(実体は `npm run build`)は次の3段階で動きます。
 
-1. `scripts/build-document.js` — `document.config.json` の `files` の順にMarkdownを結合し、章のセクション化・目次生成・画像パス書き換え・Mermaid変換を行って `.vivliostyle/generated/document-bundle.md` を作る。
+1. `scripts/build-document.js` — 設定ファイルの `files` の順にMarkdownを結合し、章のセクション化・目次生成・画像パス書き換え・Mermaid変換を行って `.vivliostyle/generated/document-bundle.md` を作る。
 2. `vivliostyle build` — バンドルをCSS組版してPDFを生成する。
 3. `scripts/add-form-fields.js` — 原稿に `pdf-field://` リンクがあれば、その位置に入力フォームを追加する(無ければ何もしない)。
+
+設定ファイルは既定で `document.config.json`。`build-pdf.ps1 -Config <パス>` / `build-pdf.sh <パス>` で別の設定を指定でき、内部では環境変数 `DOC_CONFIG` で3段階すべてに伝わります(`npm run preview` にも効きます)。組版に使うCSSは設定の `"styles"`(既定 `["styles/document.css"]`)が `vivliostyle.config.js` の `theme` になります。
 
 `.vivliostyle/` と `dist/` は生成物なので、手で編集しても次のビルドで消えます。
 

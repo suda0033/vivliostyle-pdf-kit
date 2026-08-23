@@ -28,6 +28,13 @@ jobs:
         working-directory: template
         run: ./build-pdf.sh
 
+      # samples/ の見本も壊れていないことを検証する(別設定ファイルでのビルド)
+      - name: Build sample PDFs
+        working-directory: template
+        run: |
+          ./build-pdf.sh samples/doc-info-header/document.config.json
+          ./build-pdf.sh samples/doc-info-version/document.config.json
+
       # 生成されたPDFを実行結果ページからダウンロードして確認できるようにする
       - name: Upload generated PDF
         uses: actions/upload-artifact@v7
@@ -69,6 +76,17 @@ jobs:
           ./build-pdf.sh 2>&1 | tee /tmp/build.log || {
             msg=$(tail -c 3500 /tmp/build.log | sed 's/%/%25/g' | awk '{printf "%s%%0A", $0}')
             echo "::error title=build-pdf.sh failed::${msg}"
+            exit 1
+          }
+
+      - name: Build sample PDFs
+        working-directory: template
+        shell: bash
+        run: |
+          set -o pipefail
+          for cfg in samples/*/document.config.json; do ./build-pdf.sh "$cfg"; done 2>&1 | tee /tmp/sample.log || {
+            msg=$(tail -c 3500 /tmp/sample.log | sed 's/%/%25/g' | awk '{printf "%s%%0A", $0}')
+            echo "::error title=sample build failed::${msg}"
             exit 1
           }
 
