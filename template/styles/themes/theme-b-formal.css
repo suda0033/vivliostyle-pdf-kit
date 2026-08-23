@@ -404,11 +404,69 @@ figcaption {
    表はページの先頭に置き、直後の章見出しは改ページせず同じページに続ける */
 .doc-info {
   break-before: page;
-  margin-top: 0;
+  margin: 0 0 7mm;
 }
 
 .doc-info + .chapter {
   break-before: auto;
+}
+
+/* <div class="doc-info"> の中に表を複数入れると横に並ぶ。gap は「行間 列間」の隙間。
+   幅を超えた表は次の行に折り返す(doc-info-full で強制的に次の行・全幅にできる) */
+div.doc-info {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 3mm 6mm;
+}
+
+/* (幅指定クラスが優先されるよう、この汎用ルールは詳細度を低くしてある) */
+.doc-info > table {
+  flex: 1 1 auto;
+  width: auto;
+  margin: 0;
+}
+
+/* 項目名(th)だけでなく値(td)も中央揃えにする */
+.doc-info th,
+.doc-info td {
+  text-align: center;
+}
+
+/* 幅の指定(組み合わせて使う。数値はここで調整する) */
+table.doc-info-right {   /* 右側の表: 80mm */
+  flex: 0 0 80mm;
+  width: 80mm;
+}
+
+table.doc-info-small {   /* 版数などの小さな箱: 全体幅(174mm)の約15% */
+  flex: 0 0 26mm;
+  width: 26mm;
+}
+
+table.doc-info-full {    /* 次の行に送って全幅にする */
+  flex: 0 0 100%;
+  width: 100%;
+}
+
+/* 強調色(赤系)。doc-info-right は従来どおり強調色込み。
+   他の表に付けたいときは doc-info-accent を使う */
+.doc-info-right,
+.doc-info-accent {
+  color: #7a2e2e;
+}
+
+.doc-info-right th,
+.doc-info-right td,
+.doc-info-accent th,
+.doc-info-accent td {
+  border-color: #c98c8c;
+}
+
+.doc-info-right th,
+.doc-info-accent th {
+  color: #7a2e2e;
+  background: #f9efef;
 }
 
 /* PDF入力欄のプレースホルダ。ビルド後処理(scripts/add-form-fields.js)が

@@ -17,11 +17,16 @@ const {
   PDFString,
   PDFHexString,
   PDFBool,
+  TextAlignment,
 } = require('pdf-lib');
 
+// 対象PDF: 引数で指定するか、未指定なら設定ファイルの output を使う。
+// 設定ファイルは既定で document.config.json、環境変数 DOC_CONFIG で切り替え可能。
+//   node scripts/add-form-fields.js [PDFファイル]
 const root = process.cwd();
-const config = require(path.join(root, 'document.config.json'));
-const pdfPath = path.join(root, config.output);
+const pdfPath = process.argv[2]
+  ? path.resolve(root, process.argv[2])
+  : path.join(root, require(path.resolve(root, process.env.DOC_CONFIG || 'document.config.json')).output);
 
 const MARKER = 'pdf-field://';
 
@@ -87,6 +92,8 @@ async function main() {
       field = form.createTextField(marker.name);
       // セル幅(30mm前後)に日付などが収まるよう、本文より少し小さめにする
       field.acroField.setDefaultAppearance('/Helv 9 Tf 0 g');
+      // 表のセルに合わせて中央揃え
+      field.setAlignment(TextAlignment.Center);
       fields.set(marker.name, field);
     }
     const [x1, y1, x2, y2] = marker.rect;
