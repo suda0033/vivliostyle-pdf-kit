@@ -10,7 +10,7 @@
 2. `vivliostyle build` — バンドルをCSS組版してPDFを生成する。
 3. `scripts/add-form-fields.js` — 原稿に `pdf-field://` リンクがあれば、その位置に入力フォームを追加する(無ければ何もしない)。
 
-設定ファイルは既定で `document.config.json`。`build-pdf.ps1 -Config <パス>` / `build-pdf.sh <パス>` で別の設定を指定でき、内部では環境変数 `DOC_CONFIG` で3段階すべてに伝わります(`npm run preview` にも効きます)。組版に使うCSSは設定の `"styles"`(既定 `["styles/document.css"]`)が `vivliostyle.config.js` の `theme` になります。
+設定ファイルは既定で `document.config.json`。`build-pdf.ps1 -Config <パス>` / `build-pdf.sh <パス>` で別の設定を指定でき、内部では環境変数 `DOC_CONFIG` で3段階すべてに伝わります(`npm run preview` にも効きます)。組版に使うCSSは設定の `"styles"`(既定 `["styles/document.css"]`)が `vivliostyle.config.js` の `theme` になります。原稿フォルダは設定の `"sourceDir"`(既定 `manuscript`)で、`files` の各ファイルはそこからの相対パスで解決されます。
 
 `.vivliostyle/` と `dist/` は生成物なので、手で編集しても次のビルドで消えます。
 

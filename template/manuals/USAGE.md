@@ -30,7 +30,7 @@ VivliostyleはPDF生成時にローカルサーバーを使うため、複数の
 
 | ファイル/フォルダ | 用途 |
 | --- | --- |
-| `manuscript/` | Markdown原稿 |
+| `manuscript/` | Markdown原稿(フォルダは `document.config.json` の `sourceDir` で変更可。[OPTIONS.md](OPTIONS.md) 参照) |
 | `assets/` | 画像、SVG、Mermaid元ファイル |
 | `fonts/` | 文書で使うフォント(Noto Sans JPを同梱) |
 | `styles/document.css` | PDFの見た目 |

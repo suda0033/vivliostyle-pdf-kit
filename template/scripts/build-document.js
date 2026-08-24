@@ -16,7 +16,11 @@ if (config.styles !== undefined) {
     throw new Error(`${configName} の "styles" はCSSファイルのパスを文字列の配列で指定してください。例: ["styles/document.css", "styles/header-table.css"]`);
   }
 }
-const sourceDir = path.join(root, config.sourceDir);
+// "sourceDir": 原稿フォルダ(任意。未指定なら manuscript)。テンプレートのフォルダ基準。
+if (config.sourceDir !== undefined && (typeof config.sourceDir !== 'string' || config.sourceDir.trim() === '')) {
+  throw new Error(`${configName} の "sourceDir" は原稿フォルダのパスを文字列で指定してください。例: "manuscript"`);
+}
+const sourceDir = path.join(root, config.sourceDir ?? 'manuscript');
 const generatedDir = path.join(root, '.vivliostyle', 'generated');
 const generatedDiagramDir = path.join(generatedDir, 'diagrams');
 const outputFile = path.join(generatedDir, 'document-bundle.md');

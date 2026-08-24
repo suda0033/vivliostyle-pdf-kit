@@ -200,6 +200,20 @@
 - 表の行数を増やしたら、`styles/header-table.css` の `@page` の `margin-top: 34mm` も増やします。足りないと表が本文に重なります。
 - 表の幅は `styles/header-table.css` の `.page-header table` の `width: 174mm`(A4幅210mm − 左右余白18mm×2)で指定しています。`styles/document.css` のページ余白を変えたらここも合わせます。
 
+## 原稿フォルダを変更する
+
+原稿のMarkdownを置くフォルダは、既定では `manuscript/` です。`document.config.json` の `"sourceDir"` で別のフォルダに変更できます(未指定なら `manuscript` のまま)。
+
+```json
+{
+  "sourceDir": "docs/chapters"
+}
+```
+
+- パスは、テンプレートのフォルダ(`document.config.json` がある場所)基準で書きます。サブフォルダ(`docs/chapters` など)も指定できます。
+- `files` の各ファイルは `sourceDir` からの相対パスで解決されます。
+- 原稿内の画像パスは原稿ファイルからの相対パスのままで動きます(ビルド時に自動で書き換えられます)。
+
 ## 別の設定ファイルでビルドする
 
 `build-pdf` は既定で `document.config.json` を使いますが、別の設定ファイルを指定してビルドできます。`samples/` のサンプルを試すときや、1つのフォルダで複数の文書を作り分けるときに使います。
