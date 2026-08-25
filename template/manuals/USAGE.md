@@ -4,42 +4,52 @@
 
 ## PDF更新
 
-Markdown原稿を編集した後、次を実行します。
+Markdown原稿を編集した後、**文書名**(`documents/` のフォルダ名)を指定して実行します。
 ターミナルで、`build-pdf.ps1` / `build-pdf.sh` があるフォルダ(README.mdと同じ場所)へ移動してから実行してください。
 
 Windows(PowerShell):
 
 ```powershell
-.\build-pdf.ps1
+.\build-pdf.ps1 project-document
 ```
 
 Linux・Mac:
 
 ```bash
-./build-pdf.sh
+./build-pdf.sh project-document
 ```
 
-`Permission denied` になる場合は `sh build-pdf.sh` を実行してください。
+すべての文書をまとめてビルドする場合は `-All`(Linux・Macは `--all`)を指定します。
+
+```powershell
+.\build-pdf.ps1 -All
+```
+
+```bash
+./build-pdf.sh --all
+```
+
+`Permission denied` になる場合は `sh build-pdf.sh <文書名>` を実行してください。
 
 PDFは `dist/` に出力されます。
-VivliostyleはPDF生成時にローカルサーバーを使うため、複数のPDF生成コマンドを同時に実行しないでください。
+VivliostyleはPDF生成時にローカルサーバーを使うため、複数のPDF生成コマンドを同時に実行しないでください(一括ビルドはこのため1文書ずつ順番に実行されます)。
 
-`samples/` のサンプルや別の設定ファイルでビルドする方法は [OPTIONS.md](OPTIONS.md) の「別の設定ファイルでビルドする」を参照してください。
+文書の追加方法は [OPTIONS.md](OPTIONS.md) の「複数の文書を作る」を参照してください。
 
 ## 編集する主なファイル
 
 | ファイル/フォルダ | 用途 |
 | --- | --- |
-| `manuscript/` | Markdown原稿(フォルダは `document.config.json` の `sourceDir` で変更可。[OPTIONS.md](OPTIONS.md) 参照) |
+| `documents/<文書名>/` | 文書ごとのフォルダ(Markdown原稿+設定。[documents/README.md](../documents/README.md) 参照) |
+| `documents/<文書名>/document.config.json` | 文書タイトル、出力先、結合順、フォント、フッター |
 | `assets/` | 画像、SVG、Mermaid元ファイル |
 | `fonts/` | 文書で使うフォント(Noto Sans JPを同梱) |
 | `styles/document.css` | PDFの見た目 |
-| `document.config.json` | 文書タイトル、出力先、結合順、フォント、フッター |
 
 ## Markdownファイルを追加した場合
 
-`manuscript/` に新しいMarkdownファイルを追加しただけでは、PDFには含まれません。
-PDFに含めるには、`document.config.json` の `files` に追加します。
+文書フォルダに新しいMarkdownファイルを追加しただけでは、PDFには含まれません。
+PDFに含めるには、同じフォルダの `document.config.json` の `files` に追加します。
 
 例:
 
@@ -96,7 +106,7 @@ PDFに含めるには、`document.config.json` の `files` に追加します。
 </section>
 ```
 
-- ファイル名は自由です(サンプルでは `manuscript/00-cover.md`)。表紙は目次に不要なので、`files` では `"toc": false` にします。
+- ファイル名は自由です(既定の文書では `documents/project-document/00-cover.md`)。表紙は目次に不要なので、`files` では `"toc": false` にします。
 - **表紙が不要な場合は、`files` から表紙ファイルを外すだけ**です。1ページ目から普通にページ番号・ヘッダーが表示されます。目次を文書の先頭に置きたい場合は `"tocAfter": "start"` を併せて指定してください。
 
 ### 注意書きボックス
@@ -126,7 +136,7 @@ Mermaid図は原稿に ```` ```mermaid ```` のコードブロックとして直
 
 ## 基本ルール
 
-- 内容を直す場合は `manuscript/` のMarkdownを編集します。
+- 内容を直す場合は `documents/<文書名>/` のMarkdownを編集します。
 - 見た目を直す場合は `styles/document.css` を編集します。
 - PDFを直接編集せず、MarkdownやCSSを更新してから再生成します。
 - `node_modules/` や `.vivliostyle/` は生成物です。手で編集しません。

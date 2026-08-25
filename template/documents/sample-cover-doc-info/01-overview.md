@@ -28,6 +28,6 @@
 1. `00-cover.md` の `<div class="doc-info">` 〜 `</div>` を、自分の文書の表紙ファイルの `<section class="cover">` の内側(`# タイトル` より前)にコピーします。
 2. 表の中身(プロジェクト名、承認欄の役割など)を書き換えて、通常どおりPDFを生成します。
 
-本文1ページ目にも表を置きたい場合は `samples/doc-info-version/` や `samples/doc-info-header/` を参照してください(表紙と本文の両方に置くこともできます。承認欄の `pdf-field://名前` が同じ名前なら入力値は共有されます)。
+本文1ページ目にも表を置きたい場合は `documents/sample-doc-info-version/` や `documents/sample-doc-info-header/` を参照してください(表紙と本文の両方に置くこともできます。承認欄の `pdf-field://名前` が同じ名前なら入力値は共有されます)。
 
 詳しい説明は `manuals/OPTIONS.md` の「ドキュメント情報の表を資料冒頭に入れる」を参照してください。

@@ -4,7 +4,7 @@
  * ページヘッダーに表(プロジェクト名・作成者など)を表示するためのスタイル。
  *
  * このファイルを置いただけでは何も起きない。有効化の手順は manuals/OPTIONS.md の
- * 「ページヘッダーに表を入れる」を参照(動く見本は samples/doc-info-header/)。
+ * 「ページヘッダーに表を入れる」を参照(動く見本は documents/sample-doc-info-header/)。
  *   1. document.config.json の "styles" にこのファイルを追加する
  *   2. 原稿の先頭ファイルに <header class="page-header"> の表を追加する
  *

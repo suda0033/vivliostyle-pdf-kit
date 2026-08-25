@@ -1,23 +1,17 @@
 {
-  "title": "プロジェクト文書",
+  "title": "表紙ドキュメント情報の表サンプル",
   "author": "開発チーム",
   "language": "ja",
   "size": "A4",
-  "footer": {
-    "left": "",
-    "right": ""
-  },
   "fonts": {
     "family": "Noto Sans JP",
     "faces": [
       { "file": "fonts/NotoSansJP.ttf", "weight": "100 900" }
     ]
   },
-  "sourceDir": "manuscript",
-  "output": "dist/project-document.pdf",
+  "output": "dist/cover-doc-info-sample.pdf",
   "files": [
     { "file": "00-cover.md", "toc": false },
-    { "file": "01-overview.md", "toc": true },
-    { "file": "02-operation.md", "toc": true }
+    { "file": "01-overview.md", "toc": true }
   ]
 }

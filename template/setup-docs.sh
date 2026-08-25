@@ -59,4 +59,4 @@ fi
 
 echo ""
 echo "セットアップが完了しました。PDFを生成するには次を実行してください。"
-echo "./build-pdf.sh"
+echo "./build-pdf.sh project-document"

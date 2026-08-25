@@ -1,8 +1,7 @@
-const path = require('node:path');
-
-// 設定ファイルは既定で document.config.json。環境変数 DOC_CONFIG で切り替え可能
-// (scripts/build-document.js と同じ規則)。
-const documentConfig = require(path.resolve(__dirname, process.env.DOC_CONFIG || 'document.config.json'));
+// ビルド対象の文書は環境変数 DOC_CONFIG(文書名)で指定される
+// (scripts/build-document.js と同じ規則で documents/<文書名>/ に解決)。
+const { resolveDocConfig } = require('./scripts/resolve-config');
+const documentConfig = require(resolveDocConfig(__dirname));
 
 module.exports = {
   title: documentConfig.title,

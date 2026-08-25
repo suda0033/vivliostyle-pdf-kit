@@ -4,32 +4,31 @@
 
 - 表紙上部: 左に文書情報、右に承認欄(`doc-info-right`)。承認欄はPDFで記入できる入力フォーム
 - タイトル・作成者・作成日は従来どおり表紙の中央に配置される
-- 本文ページに表は置かない(本文1ページ目に置く例は `samples/doc-info-version/`、ヘッダー表と組み合わせる例は `samples/doc-info-header/` を参照)
+- 本文ページに表は置かない(本文1ページ目に置く例は `../sample-doc-info-version/`、ヘッダー表と組み合わせる例は `../sample-doc-info-header/` を参照)
 
 ## ビルド方法
 
-テンプレートのフォルダ(`build-pdf.ps1` がある場所)で、設定ファイルを指定して実行します。
+テンプレートのフォルダ(`build-pdf.ps1` がある場所)で、文書名を指定して実行します。
 
 Windows(PowerShell):
 
 ```powershell
-.\build-pdf.ps1 -Config samples/cover-doc-info/document.config.json
+.\build-pdf.ps1 sample-cover-doc-info
 ```
 
 Linux・Mac:
 
 ```bash
-./build-pdf.sh samples/cover-doc-info/document.config.json
+./build-pdf.sh sample-cover-doc-info
 ```
 
-`dist/cover-doc-info-sample.pdf` が生成されます。自分の文書(`manuscript/` と `document.config.json`)には影響しません。
+`dist/cover-doc-info-sample.pdf` が生成されます。自分の文書には影響しません。
 
 ## 設定のポイント(document.config.json)
 
 | キー | このサンプルでの値 | 意味 |
 | --- | --- | --- |
-| `sourceDir` | `samples/cover-doc-info` | 原稿フォルダ |
-| `output` | `dist/cover-doc-info-sample.pdf` | 出力先(既定の文書と別名) |
+| `output` | `dist/cover-doc-info-sample.pdf` | 出力先(他の文書と別名) |
 | `styles` | (未指定) | `styles/document.css` のみ。追加CSSは不要 |
 
 ## 表の組み方(00-cover.md)

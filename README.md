@@ -14,13 +14,13 @@ Markdown原稿を[Vivliostyle](https://vivliostyle.org/)でPDF化するための
 template/
 ├── README.md            # マニュアルの案内(どのファイルを見ればいいか)
 ├── manuals/             # マニュアル(SETUP: 初回 / USAGE: 日常 / OPTIONS: オプション機能 / SPEC: 詳細仕様)
-├── samples/             # 機能の見本(サンプルごとに1フォルダ、README付き)
 ├── setup-docs.ps1       # 初回セットアップ(Windows / PowerShell)
 ├── build-pdf.ps1        # PDF生成(Windows / PowerShell)
 ├── setup-docs.sh        # 初回セットアップ(Linux・Mac / シェル)
 ├── build-pdf.sh         # PDF生成(Linux・Mac / シェル)
-├── document.config.json # 文書タイトル、出力先、結合順、フォント、フッター
-├── manuscript/          # Markdown原稿
+├── documents/           # 文書フォルダ(1文書=1フォルダ。原稿Markdown+document.config.json)
+│   ├── project-document/    # 既定の文書
+│   └── sample-*/            # 機能の見本(README付き。不要なら削除可)
 ├── assets/              # 画像
 ├── fonts/               # 文書で使うフォント(Noto Sans JPを同梱)
 ├── styles/document.css  # PDFの見た目

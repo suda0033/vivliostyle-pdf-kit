@@ -20,13 +20,14 @@ const {
   TextAlignment,
 } = require('pdf-lib');
 
-// 対象PDF: 引数で指定するか、未指定なら設定ファイルの output を使う。
-// 設定ファイルは既定で document.config.json、環境変数 DOC_CONFIG で切り替え可能。
+// 対象PDF: 引数で指定するか、未指定なら環境変数 DOC_CONFIG(文書名)の
+// 設定ファイル(documents/<文書名>/document.config.json)の output を使う。
 //   node scripts/add-form-fields.js [PDFファイル]
+const { resolveDocConfig } = require('./resolve-config');
 const root = process.cwd();
 const pdfPath = process.argv[2]
   ? path.resolve(root, process.argv[2])
-  : path.join(root, require(path.resolve(root, process.env.DOC_CONFIG || 'document.config.json')).output);
+  : path.join(root, require(resolveDocConfig(root)).output);
 
 const MARKER = 'pdf-field://';
 

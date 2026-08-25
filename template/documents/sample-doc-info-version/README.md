@@ -6,33 +6,32 @@
 - 2行目: 承認欄(全幅・標準色)。PDFで記入できる入力フォーム
 - フッター: 左下にコピーライト、中央にページ番号
 
-ヘッダー表は使いません(ヘッダー表付きは `samples/doc-info-header/` を参照)。
+ヘッダー表は使いません(ヘッダー表付きは `../sample-doc-info-header/` を参照)。
 
 ## ビルド方法
 
-テンプレートのフォルダ(`build-pdf.ps1` がある場所)で、設定ファイルを指定して実行します。
+テンプレートのフォルダ(`build-pdf.ps1` がある場所)で、文書名を指定して実行します。
 
 Windows(PowerShell):
 
 ```powershell
-.\build-pdf.ps1 -Config samples/doc-info-version/document.config.json
+.\build-pdf.ps1 sample-doc-info-version
 ```
 
 Linux・Mac:
 
 ```bash
-./build-pdf.sh samples/doc-info-version/document.config.json
+./build-pdf.sh sample-doc-info-version
 ```
 
-`dist/doc-info-version-sample.pdf` が生成されます。自分の文書(`manuscript/` と `document.config.json`)には影響しません。
+`dist/doc-info-version-sample.pdf` が生成されます。自分の文書には影響しません。
 
 ## 設定のポイント(document.config.json)
 
 | キー | このサンプルでの値 | 意味 |
 | --- | --- | --- |
 | `footer.left` | `© 2026 開発チーム` | 左下のコピーライト。`center` は未指定なのでページ番号が出る |
-| `sourceDir` | `samples/doc-info-version` | 原稿フォルダ |
-| `output` | `dist/doc-info-version-sample.pdf` | 出力先(既定の文書と別名) |
+| `output` | `dist/doc-info-version-sample.pdf` | 出力先(他の文書と別名) |
 | `styles` | (未指定) | `styles/document.css` のみ。ヘッダー表は使わない |
 
 ## 表の組み方(01-overview.md)
@@ -49,8 +48,8 @@ Linux・Mac:
 
 ## 自分の文書に組み込むには
 
-1. `01-overview.md` の `<div class="doc-info">` 〜 `</div>` を、自分の最初の本文ファイルの最初の `# 見出し` より前にコピーする(表紙に置く例は `samples/cover-doc-info/` を参照)。
-2. ルートの `document.config.json` の `"footer"` に `"left": "© 2026 〇〇"` を書く。
+1. `01-overview.md` の `<div class="doc-info">` 〜 `</div>` を、自分の最初の本文ファイルの最初の `# 見出し` より前にコピーする(表紙に置く例は `../sample-cover-doc-info/` を参照)。
+2. 自分の文書の `document.config.json` の `"footer"` に `"left": "© 2026 〇〇"` を書く。
 3. 表の中身(プロジェクト名、版数、承認欄の役割など)を書き換えて、通常どおり `build-pdf` を実行する。
 
 ## 注意

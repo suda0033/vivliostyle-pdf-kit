@@ -3,9 +3,11 @@ const path = require('node:path');
 const { execFileSync } = require('node:child_process');
 
 const root = process.cwd();
-// 設定ファイルは既定で document.config.json。環境変数 DOC_CONFIG(ルートからの相対パス)で
-// 別の設定に切り替えられる(build-pdf.ps1 の -Config / build-pdf.sh の第1引数)。
-const configPath = path.resolve(root, process.env.DOC_CONFIG || 'document.config.json');
+// ビルド対象の文書は環境変数 DOC_CONFIG(文書名)で指定され、
+// documents/<文書名>/document.config.json が設定ファイルになる
+// (build-pdf.ps1 / build-pdf.sh の第1引数と同じ規則)。
+const { resolveDocConfig } = require('./resolve-config');
+const configPath = resolveDocConfig(root);
 const configName = path.relative(root, configPath).split(path.sep).join('/');
 const config = require(configPath);
 
@@ -16,14 +18,30 @@ if (config.styles !== undefined) {
     throw new Error(`${configName} の "styles" はCSSファイルのパスを文字列の配列で指定してください。例: ["styles/document.css", "styles/header-table.css"]`);
   }
 }
-// "sourceDir": 原稿フォルダ(任意。未指定なら manuscript)。テンプレートのフォルダ基準。
+// "sourceDir": 原稿フォルダ(任意。未指定なら文書自身のフォルダ)。テンプレートのフォルダ基準。
 if (config.sourceDir !== undefined && (typeof config.sourceDir !== 'string' || config.sourceDir.trim() === '')) {
-  throw new Error(`${configName} の "sourceDir" は原稿フォルダのパスを文字列で指定してください。例: "manuscript"`);
+  throw new Error(`${configName} の "sourceDir" は原稿フォルダのパスを文字列で指定してください。例: "documents/report"`);
 }
-const sourceDir = path.join(root, config.sourceDir ?? 'manuscript');
+// "files": 結合する原稿ファイルの一覧(必須)。
+if (
+  !Array.isArray(config.files) ||
+  config.files.length === 0 ||
+  config.files.some((entry) => !entry || typeof entry.file !== 'string' || entry.file.trim() === '')
+) {
+  throw new Error(`${configName} の "files" には、原稿ファイルを {"file": "..."} の配列で1つ以上指定してください。`);
+}
+// "output": 出力PDFのパス(必須)。
+if (typeof config.output !== 'string' || config.output.trim() === '') {
+  throw new Error(`${configName} の "output" に出力PDFのパスを文字列で指定してください。例: "dist/report.pdf"`);
+}
+const sourceDir = config.sourceDir !== undefined ? path.join(root, config.sourceDir) : path.dirname(configPath);
 const generatedDir = path.join(root, '.vivliostyle', 'generated');
 const generatedDiagramDir = path.join(generatedDir, 'diagrams');
 const outputFile = path.join(generatedDir, 'document-bundle.md');
+
+// 生成フォルダは文書間で共有されるため、前回ビルドの生成物
+// (別文書のMermaid SVGなど)が混ざらないよう毎回作り直す
+fs.rmSync(generatedDir, { recursive: true, force: true });
 
 const counters = [0, 0, 0, 0];
 const tocItems = [];

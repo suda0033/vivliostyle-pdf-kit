@@ -55,7 +55,7 @@
 
    - `family`: 文書全体で使うフォント名。
    - `faces`: 使うフォントファイルの一覧。`weight` は `400`(標準)や `700`(太字)など。太字用ファイルも指定しておくと、見出しや `**強調**` に本物の太字が使われます。斜体フォントは `"style": "italic"` を追加します。同梱のNoto Sans JPのようなバリアブルフォントは `"weight": "100 900"` のように範囲で指定します。
-3. `./build-pdf.ps1`(Linux・Macは `./build-pdf.sh`)で再生成します。
+3. `.\build-pdf.ps1 <文書名>`(Linux・Macは `./build-pdf.sh <文書名>`)で再生成します。
 
 ### OSにインストール済みのフォントを名前で指定する
 
@@ -101,9 +101,9 @@
 本文1ページ目の冒頭に、プロジェクト名や承認欄などをまとめた罫線付きの表を置けます。
 `pdf-field://` を書いたセルは**入力可能なPDFフォーム**になり、生成後のPDFにビューア(Acrobat Reader・Edge・Chrome等)から記入して保存できます。
 
-最初の本文の原稿ファイル(例: `manuscript/01-overview.md`)の、最初の `# 見出し` より前に次のように書き、あとは通常どおりPDFを生成するだけです。左に文書情報、右に承認欄という2つの表が横に並びます。内容・列数は自由に変えられます。
+最初の本文の原稿ファイル(例: `documents/project-document/01-overview.md`)の、最初の `# 見出し` より前に次のように書き、あとは通常どおりPDFを生成するだけです。左に文書情報、右に承認欄という2つの表が横に並びます。内容・列数は自由に変えられます。
 
-動く見本が `samples/` にあります(`doc-info-header/`: ヘッダー表と組み合わせ、`doc-info-version/`: 版数の小箱+2行目に承認欄、`cover-doc-info/`: 表紙の最上部に配置。ビルド方法は各フォルダの `README.md` を参照)。
+動く見本が `documents/` にあります(`sample-doc-info-header/`: ヘッダー表と組み合わせ、`sample-doc-info-version/`: 版数の小箱+2行目に承認欄、`sample-cover-doc-info/`: 表紙の最上部に配置。ビルド方法は各フォルダの `README.md` を参照)。
 
 ```html
 <div class="doc-info">
@@ -151,7 +151,7 @@
 - 表を1つだけ置きたい場合は、`<div>` を使わず `<table class="doc-info">` 1つで書けます。
 - `<div class="doc-info">` の内側には**空行を入れないでください**(空行があるとそこでHTMLブロックが途切れます)。
 - 表はページの先頭に配置され、直後の章見出しは改ページせず同じページに続きます。
-- **表紙にも置けます。** `<section class="cover">` の内側(`# タイトル` より前)に書くと、表紙の最上部に配置されます(タイトルは中央のまま。見本: `samples/cover-doc-info/`)。
+- **表紙にも置けます。** `<section class="cover">` の内側(`# タイトル` より前)に書くと、表紙の最上部に配置されます(タイトルは中央のまま。見本: `documents/sample-cover-doc-info/`)。
 - ビルドの最後に `Added 6 form field(s) to ...` と表示されれば、入力欄が埋め込まれています(`scripts/add-form-fields.js` が自動実行)。
 - **PDFを再生成すると入力済みの値は消えます。** 記入は文書を確定するビルドの後に。
 - 入力欄の文字サイズは9ptです。変える場合は `scripts/add-form-fields.js` の `'/Helv 9 Tf 0 g'` の `9` を調整します。
@@ -170,7 +170,7 @@
    }
    ```
 
-2. `document.config.json` の `files` で**先頭にある原稿ファイル**(通常は `manuscript/00-cover.md`)の先頭に、ヘッダー用の表を追加します。内容は自分の文書に合わせて書き換えてください。
+2. `document.config.json` の `files` で**先頭にある原稿ファイル**(既定の文書では `documents/project-document/00-cover.md`)の先頭に、ヘッダー用の表を追加します。内容は自分の文書に合わせて書き換えてください。
 
    ```html
    <header class="page-header">
@@ -193,7 +193,7 @@
    </header>
    ```
 
-あとは `.\build-pdf.ps1`(Linux・Macは `./build-pdf.sh`)を実行すると、各ページの上部にこの表が入ります。
+あとは `.\build-pdf.ps1 <文書名>`(Linux・Macは `./build-pdf.sh <文書名>`)を実行すると、各ページの上部にこの表が入ります。
 表紙(`<section class="cover">` のページ)には表示されません。
 
 調整するときの注意:
@@ -203,7 +203,7 @@
 
 ## 原稿フォルダを変更する
 
-原稿のMarkdownを置くフォルダは、既定では `manuscript/` です。`document.config.json` の `"sourceDir"` で別のフォルダに変更できます(未指定なら `manuscript` のまま)。
+原稿のMarkdownを置くフォルダは、既定では**文書自身のフォルダ**(`document.config.json` と同じ場所)です。`"sourceDir"` で別のフォルダに変更できます。
 
 ```json
 {
@@ -211,29 +211,32 @@
 }
 ```
 
-- パスは、テンプレートのフォルダ(`document.config.json` がある場所)基準で書きます。サブフォルダ(`docs/chapters` など)も指定できます。
+- パスは、テンプレートのフォルダ(`build-pdf.ps1` がある場所)基準で書きます。サブフォルダ(`docs/chapters` など)も指定できます。
 - `files` の各ファイルは `sourceDir` からの相対パスで解決されます。
 - 原稿内の画像パスは原稿ファイルからの相対パスのままで動きます(ビルド時に自動で書き換えられます)。
 
-## 別の設定ファイルでビルドする
+## 複数の文書を作る
 
-`build-pdf` は既定で `document.config.json` を使いますが、別の設定ファイルを指定してビルドできます。`samples/` のサンプルを試すときや、1つのフォルダで複数の文書を作り分けるときに使います。
+このキットは**1つの文書 = 1つのフォルダ**で、`documents/` に文書フォルダを増やすだけで複数の文書を作り分けられます。手順とパスの規則は [documents/README.md](../documents/README.md) を参照してください。
 
 Windows(PowerShell):
 
 ```powershell
-.\build-pdf.ps1 -Config samples/doc-info-header/document.config.json
+.\build-pdf.ps1 report        # documents/report/ をビルド
+.\build-pdf.ps1 -All          # すべての文書をビルド
 ```
 
 Linux・Mac:
 
 ```bash
-./build-pdf.sh samples/doc-info-header/document.config.json
+./build-pdf.sh report         # documents/report/ をビルド
+./build-pdf.sh --all          # すべての文書をビルド
 ```
 
-- 設定ファイル内のパス(`sourceDir`、`output`、`fonts`、`styles`)は、設定ファイルの場所ではなく**テンプレートのフォルダ基準**で書きます。
-- `output` は文書ごとに別名にしてください(同じだと上書きされます)。
-- 組版に使うCSSは設定の `"styles"` で指定できます(未指定なら `styles/document.css`)。`styles/themes/` のテーマに切り替える場合も、ここで `["styles/themes/theme-b-formal.css"]` のように指定します。
+- 一括ビルドは `documents/` 直下の文書フォルダ(`document.config.json` があるもの)をアルファベット順に1つずつビルドします。途中の文書が失敗するとそこで停止します。
+- `output` は文書ごとに別名にしてください(同じだと上書きされます)。一括ビルドでは開始前に重複をチェックし、重複があればエラーで停止します。
+- 組版に使うCSSは設定の `"styles"` で指定できます(未指定なら `styles/document.css`)。`styles/themes/` のテーマに切り替える場合も、ここで `["styles/themes/theme-b-formal.css"]` のように指定します。文書ごとに別のCSSを指定できます。
+- プレビュー(`npm run preview`)で文書を指定する場合は、環境変数 `DOC_CONFIG` に文書名を設定します(PowerShell: `$env:DOC_CONFIG="report"; npm run preview`。終わったら `Remove-Item Env:DOC_CONFIG`。Linux・Mac: `DOC_CONFIG=report npm run preview`)。
 
 ## HTMLとCSSで独自のレイアウトを作る
 

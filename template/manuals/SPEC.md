@@ -10,7 +10,9 @@
 2. `vivliostyle build` — バンドルをCSS組版してPDFを生成する。
 3. `scripts/add-form-fields.js` — 原稿に `pdf-field://` リンクがあれば、その位置に入力フォームを追加する(無ければ何もしない)。
 
-設定ファイルは既定で `document.config.json`。`build-pdf.ps1 -Config <パス>` / `build-pdf.sh <パス>` で別の設定を指定でき、内部では環境変数 `DOC_CONFIG` で3段階すべてに伝わります(`npm run preview` にも効きます)。組版に使うCSSは設定の `"styles"`(既定 `["styles/document.css"]`)が `vivliostyle.config.js` の `theme` になります。原稿フォルダは設定の `"sourceDir"`(既定 `manuscript`)で、`files` の各ファイルはそこからの相対パスで解決されます。
+ビルド対象の文書は `build-pdf.ps1 <文書名>` / `build-pdf.sh <文書名>` で指定し、設定ファイルは `documents/<文書名>/document.config.json` です。内部では環境変数 `DOC_CONFIG` に文書名が入り、`scripts/resolve-config.js` が3段階すべてで同じ規則で設定ファイルに解決します(`npm run preview` にも効きます)。一括ビルド(`-All` / `--all`)は、`scripts/list-documents.js` が `documents/` 配下の文書名を列挙・検証(`output` の重複チェック)した一覧を、ラッパーが1文書ずつ順にビルドします。組版に使うCSSは設定の `"styles"`(既定 `["styles/document.css"]`)が `vivliostyle.config.js` の `theme` になります。原稿フォルダは設定の `"sourceDir"`(既定は文書自身のフォルダ)で、`files` の各ファイルはそこからの相対パスで解決されます。
+
+`.vivliostyle/generated/` は文書間で共有されるため、ビルドのたびに削除して作り直されます(前回ビルドした別文書のMermaid SVGなどが混ざりません)。
 
 `.vivliostyle/` と `dist/` は生成物なので、手で編集しても次のビルドで消えます。
 

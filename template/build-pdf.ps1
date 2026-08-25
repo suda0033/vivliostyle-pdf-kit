@@ -1,25 +1,43 @@
-﻿# 使い方: .\build-pdf.ps1 [-Config 設定ファイル]
-#   -Config を省略すると document.config.json を使う。
-#   samples/ のサンプルなど別の設定で生成する場合に指定する。
-#   例: .\build-pdf.ps1 -Config samples/doc-info-header/document.config.json
+﻿# 使い方: .\build-pdf.ps1 <文書名>  または  .\build-pdf.ps1 -All
+#   文書名 → documents/<文書名>/document.config.json の設定でビルドする
+#   -All   → documents/ 配下のすべての文書を順番にビルドする
+#   例: .\build-pdf.ps1 project-document
 param(
-    [string]$Config = "document.config.json"
+    [Parameter(Position = 0)]
+    [string]$Document,
+    [switch]$All
 )
 
 $ErrorActionPreference = "Stop"
 
 Set-Location $PSScriptRoot
 
-if (-not (Test-Path $Config -PathType Leaf)) {
-    Write-Error "設定ファイルが見つかりません: $Config"
-}
-
 function Test-CommandExists {
     param([string]$Name)
     return [bool](Get-Command $Name -ErrorAction SilentlyContinue)
 }
 
-Write-Host "Vivliostyle PDF文書の生成を開始します。(設定: $Config)"
+function Get-DocumentListText {
+    if (Test-Path "documents") {
+        $names = Get-ChildItem documents -Directory |
+            Where-Object { Test-Path (Join-Path $_.FullName "document.config.json") } |
+            ForEach-Object { "  - $($_.Name)" }
+        return "documents/ にある文書:`n" + ($names -join "`n")
+    }
+    return "documents/ フォルダがまだありません。documents/<文書名>/document.config.json を作成してください。"
+}
+
+if ($All -and $Document) {
+    Write-Error "-All と文書名は同時に指定できません。"
+}
+
+if (-not $All -and -not $Document) {
+    Write-Error ("ビルドする文書を指定してください。`n使い方: .\build-pdf.ps1 <文書名>  または  .\build-pdf.ps1 -All`n" + (Get-DocumentListText))
+}
+
+if ($Document -and -not (Test-Path "documents/$Document/document.config.json" -PathType Leaf)) {
+    Write-Error ("文書 '$Document' が見つかりません(documents/$Document/document.config.json がありません)。`n" + (Get-DocumentListText))
+}
 
 if (-not (Test-CommandExists "node")) {
     Write-Error "Node.jsが見つかりません。初回セットアップ手順を確認してください。"
@@ -41,14 +59,27 @@ if (-not (Test-Path "node_modules")) {
     }
 }
 
-# 環境変数 DOC_CONFIG で設定ファイルをビルドスクリプト群に伝える。
+if ($All) {
+    # 一括ビルドの前に文書一覧を取得し、output の重複などを検証する
+    $documents = @(node scripts/list-documents.js)
+    if ($LASTEXITCODE -ne 0) {
+        Write-Error "documents/ の文書一覧の取得に失敗しました。上のエラーメッセージを確認してください。"
+    }
+} else {
+    $documents = @($Document)
+}
+
+# 環境変数 DOC_CONFIG で文書名をビルドスクリプト群に伝える。
 # 呼び出し元のセッションに残らないよう、終了時に元の値へ戻す
 $previousConfig = $env:DOC_CONFIG
 try {
-    $env:DOC_CONFIG = $Config
-    npm run build
-    if ($LASTEXITCODE -ne 0) {
-        Write-Error "PDF生成に失敗しました。上のエラーメッセージを確認してください。"
+    foreach ($name in $documents) {
+        Write-Host "Vivliostyle PDF文書の生成を開始します。(文書: $name)"
+        $env:DOC_CONFIG = $name
+        npm run build
+        if ($LASTEXITCODE -ne 0) {
+            Write-Error "PDF生成に失敗しました。(文書: $name)上のエラーメッセージを確認してください。"
+        }
     }
 } finally {
     if ($null -eq $previousConfig) {
@@ -59,4 +90,9 @@ try {
 }
 
 Write-Host ""
-Write-Host "PDF生成が完了しました。出力先は $Config の output を確認してください。"
+if ($All) {
+    Write-Host "全文書のPDF生成が完了しました:"
+    $documents | ForEach-Object { Write-Host "  - $_" }
+} else {
+    Write-Host "PDF生成が完了しました。出力先は documents/$Document/document.config.json の output を確認してください。"
+}

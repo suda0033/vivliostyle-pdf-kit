@@ -33,4 +33,4 @@ if ($LASTEXITCODE -ne 0) {
 
 Write-Host ""
 Write-Host "セットアップが完了しました。PDFを生成するには次を実行してください。"
-Write-Host ".\build-pdf.ps1"
+Write-Host ".\build-pdf.ps1 project-document"
