@@ -34,6 +34,7 @@ jobs:
         run: |
           ./build-pdf.sh samples/doc-info-header/document.config.json
           ./build-pdf.sh samples/doc-info-version/document.config.json
+          ./build-pdf.sh samples/cover-doc-info/document.config.json
 
       # 生成されたPDFを実行結果ページからダウンロードして確認できるようにする
       - name: Upload generated PDF

@@ -103,7 +103,7 @@
 
 最初の本文の原稿ファイル(例: `manuscript/01-overview.md`)の、最初の `# 見出し` より前に次のように書き、あとは通常どおりPDFを生成するだけです。左に文書情報、右に承認欄という2つの表が横に並びます。内容・列数は自由に変えられます。
 
-動く見本が `samples/` にあります(`doc-info-header/`: ヘッダー表と組み合わせ、`doc-info-version/`: 版数の小箱+2行目に承認欄。ビルド方法は各フォルダの `README.md` を参照)。
+動く見本が `samples/` にあります(`doc-info-header/`: ヘッダー表と組み合わせ、`doc-info-version/`: 版数の小箱+2行目に承認欄、`cover-doc-info/`: 表紙の最上部に配置。ビルド方法は各フォルダの `README.md` を参照)。
 
 ```html
 <div class="doc-info">
@@ -151,6 +151,7 @@
 - 表を1つだけ置きたい場合は、`<div>` を使わず `<table class="doc-info">` 1つで書けます。
 - `<div class="doc-info">` の内側には**空行を入れないでください**(空行があるとそこでHTMLブロックが途切れます)。
 - 表はページの先頭に配置され、直後の章見出しは改ページせず同じページに続きます。
+- **表紙にも置けます。** `<section class="cover">` の内側(`# タイトル` より前)に書くと、表紙の最上部に配置されます(タイトルは中央のまま。見本: `samples/cover-doc-info/`)。
 - ビルドの最後に `Added 6 form field(s) to ...` と表示されれば、入力欄が埋め込まれています(`scripts/add-form-fields.js` が自動実行)。
 - **PDFを再生成すると入力済みの値は消えます。** 記入は文書を確定するビルドの後に。
 - 入力欄の文字サイズは9ptです。変える場合は `scripts/add-form-fields.js` の `'/Helv 9 Tf 0 g'` の `9` を調整します。

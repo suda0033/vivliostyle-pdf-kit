@@ -26,3 +26,4 @@
 | --- | --- |
 | [samples/doc-info-header/](samples/doc-info-header/) | 本文冒頭のドキュメント情報の表(承認欄はPDFで記入できる入力フォーム)+ 各ページのヘッダー表 |
 | [samples/doc-info-version/](samples/doc-info-version/) | ドキュメント情報の表を2行構成に(1行目: 文書情報+版数の小箱、2行目: 承認欄)+ フッター左にコピーライト |
+| [samples/cover-doc-info/](samples/cover-doc-info/) | ドキュメント情報の表を表紙の最上部に配置(タイトルは中央のまま。承認欄はPDFで記入できる入力フォーム) |

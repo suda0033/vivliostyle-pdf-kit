@@ -276,6 +276,19 @@ svg {
   break-before: auto;
 }
 
+/* 表紙(.cover)の中に置いた場合の上書き(見本: samples/cover-doc-info/)。
+   表紙内では改ページさせず、表を表紙の最上部に押し上げる。
+   2つ目のルールで残りの空間をタイトル群の上下に半分ずつ配り、
+   タイトルは従来どおり中央に保つ(doc-infoが無い表紙には影響しない) */
+.cover .doc-info {
+  break-before: auto;
+  margin-bottom: auto;
+}
+
+.cover > .doc-info ~ :last-child {
+  margin-bottom: auto;
+}
+
 /* <div class="doc-info"> の中に表を複数入れると横に並ぶ。gap は「行間 列間」の隙間。
    幅を超えた表は次の行に折り返す(doc-info-full で強制的に次の行・全幅にできる) */
 div.doc-info {

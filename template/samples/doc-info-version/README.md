@@ -49,7 +49,7 @@ Linux・Mac:
 
 ## 自分の文書に組み込むには
 
-1. `01-overview.md` の `<div class="doc-info">` 〜 `</div>` を、自分の最初の本文ファイルの最初の `# 見出し` より前にコピーする(表紙には置かない)。
+1. `01-overview.md` の `<div class="doc-info">` 〜 `</div>` を、自分の最初の本文ファイルの最初の `# 見出し` より前にコピーする(表紙に置く例は `samples/cover-doc-info/` を参照)。
 2. ルートの `document.config.json` の `"footer"` に `"left": "© 2026 〇〇"` を書く。
 3. 表の中身(プロジェクト名、版数、承認欄の役割など)を書き換えて、通常どおり `build-pdf` を実行する。
 
