@@ -24,8 +24,10 @@ docdir=$(node scripts/print-documents-dir.js)
 show_documents() {
     if [ -d "$docdir" ]; then
         echo "$docdir/ にある文書:" >&2
-        for dir in "$docdir"/*/; do
-            [ -f "${dir}document.config.json" ] && echo "  - $(basename "$dir")" >&2
+        # サブフォルダも含めて document.config.json を持つフォルダを文書として表示する
+        find "$docdir" -name document.config.json | sort | while IFS= read -r cfg; do
+            dir=${cfg%/document.config.json}
+            echo "  - ${dir#"$docdir"/}" >&2
         done
     else
         echo "$docdir/ フォルダがまだありません。$docdir/<文書名>/document.config.json を作成してください。" >&2

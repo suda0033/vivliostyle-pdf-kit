@@ -24,13 +24,21 @@ function getDocumentsDir(baseDir) {
   return relative.split(path.sep).join('/');
 }
 
-// 文書フォルダ名の検証。スペース(半角・全角・タブ)入りの名前は
-// build-pdf.sh の一括ビルドで正しく扱えないため、どの経路でも一律にエラーにする。
+// 文書名の検証。スペース(半角・全角・タブ)入りの名前は build-pdf.sh の
+// 一括ビルドで正しく扱えないため、どの経路でも一律にエラーにする。
+// 文書名はサブフォルダ区切り(例: "team-a/report")を含められるが、
+// ".." などで文書フォルダの外に出ることはできない。
 function assertValidDocumentName(name, documentsDir) {
   if (/[ \t　]/.test(name)) {
     const suggestion = name.replace(/[ \t　]+/g, '-');
     throw new Error(
       `文書フォルダ名 '${name}' にはスペースを使えません。'${documentsDir}/${suggestion}' のようにスペースなしの名前に変更してください。`,
+    );
+  }
+  const segments = name.split(/[\\/]/);
+  if (path.isAbsolute(name) || segments.some((segment) => segment === '' || segment === '.' || segment === '..')) {
+    throw new Error(
+      `文書名 '${name}' は不正です。${documentsDir}/ からの相対パスで、'..' を含まない名前を指定してください。例: "team-a/report"`,
     );
   }
 }
@@ -47,6 +55,14 @@ function resolveDocConfig(baseDir) {
   }
   const documentsDir = getDocumentsDir(baseDir);
   assertValidDocumentName(name, documentsDir);
+  // 文書フォルダの中に別の文書は置けない(一括ビルドの探索規則と揃える)
+  const segments = name.split(/[\\/]/);
+  for (let i = 1; i < segments.length; i += 1) {
+    const ancestor = segments.slice(0, i).join('/');
+    if (fs.existsSync(path.resolve(baseDir, documentsDir, ancestor, 'document.config.json'))) {
+      throw new Error(`文書 '${name}' は文書 '${ancestor}' の中にあります。文書フォルダの中に別の文書は置けません。`);
+    }
+  }
   const configPath = path.resolve(baseDir, documentsDir, name, 'document.config.json');
   if (!fs.existsSync(configPath)) {
     throw new Error(`文書 '${name}' が見つかりません(${documentsDir}/${name}/document.config.json がありません)。`);

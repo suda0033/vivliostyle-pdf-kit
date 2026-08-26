@@ -31,6 +31,22 @@ documents/
 2. 既存の文書フォルダから `document.config.json` をコピーし、`title` と `output` を書き換えます。`output` は文書ごとに別名にしてください(一括ビルド時に重複があるとエラーになります)。
 3. 原稿のMarkdownを同じフォルダに置き、`files` に列挙します。
 
+### サブフォルダで分類する
+
+文書が増えたら、サブフォルダで分類できます。文書名はフォルダ区切りを含めた `documents/` からの相対パスになります。
+
+```text
+documents/
+├── team-a/
+│   ├── report/          → .\build-pdf.ps1 team-a/report
+│   └── design/          → .\build-pdf.ps1 team-a/design
+└── team-b/
+    └── report/          → .\build-pdf.ps1 team-b/report
+```
+
+- 一括ビルド(`-All` / `--all`)もサブフォルダの中まで探索します。
+- `document.config.json` を持つフォルダが「文書」です。**文書フォルダの中に別の文書は置けません**(エラーになります)。
+
 ## 設定内のパスの規則
 
 - `document.config.json` の中のパス(`output`、`fonts`、`styles` など)は、文書フォルダではなく**テンプレートのフォルダ基準**で書きます。そのため `fonts/` や `styles/` は全文書で共有できます。

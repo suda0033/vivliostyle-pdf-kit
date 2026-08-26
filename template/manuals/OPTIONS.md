@@ -233,7 +233,8 @@ Linux・Mac:
 ./build-pdf.sh --all          # すべての文書をビルド
 ```
 
-- 一括ビルドは `documents/` 直下の文書フォルダ(`document.config.json` があるもの)をアルファベット順に1つずつビルドします。途中の文書が失敗するとそこで停止します。
+- 一括ビルドは `documents/` 配下の文書フォルダ(`document.config.json` があるもの)をサブフォルダも含めて探索し、アルファベット順に1つずつビルドします。途中の文書が失敗するとそこで停止します。
+- 文書はサブフォルダで分類できます(例: `documents/team-a/report/` → 文書名は `team-a/report`)。文書フォルダの中に別の文書は置けません。詳しくは [documents/README.md](../documents/README.md) を参照してください。
 - `output` は文書ごとに別名にしてください(同じだと上書きされます)。一括ビルドでは開始前に重複をチェックし、重複があればエラーで停止します。
 - 組版に使うCSSは設定の `"styles"` で指定できます(未指定なら `styles/document.css`)。`styles/themes/` のテーマに切り替える場合も、ここで `["styles/themes/theme-b-formal.css"]` のように指定します。文書ごとに別のCSSを指定できます。
 - プレビュー(`npm run preview`)で文書を指定する場合は、環境変数 `DOC_CONFIG` に文書名を設定します(PowerShell: `$env:DOC_CONFIG="report"; npm run preview`。終わったら `Remove-Item Env:DOC_CONFIG`。Linux・Mac: `DOC_CONFIG=report npm run preview`)。

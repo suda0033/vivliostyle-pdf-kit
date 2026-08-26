@@ -38,9 +38,11 @@ if ($LASTEXITCODE -ne 0) {
 
 function Get-DocumentListText {
     if (Test-Path $DocumentsDir) {
-        $names = Get-ChildItem $DocumentsDir -Directory |
-            Where-Object { Test-Path (Join-Path $_.FullName "document.config.json") } |
-            ForEach-Object { "  - $($_.Name)" }
+        # サブフォルダも含めて document.config.json を持つフォルダを文書として表示する
+        $base = (Get-Item $DocumentsDir).FullName
+        $names = Get-ChildItem $DocumentsDir -Recurse -Filter "document.config.json" -File |
+            ForEach-Object { "  - " + ($_.Directory.FullName.Substring($base.Length + 1) -replace '\\', '/') } |
+            Sort-Object
         return "$DocumentsDir/ にある文書:`n" + ($names -join "`n")
     }
     return "$DocumentsDir/ フォルダがまだありません。$DocumentsDir/<文書名>/document.config.json を作成してください。"

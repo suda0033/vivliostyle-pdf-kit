@@ -22,11 +22,26 @@ if (!fs.existsSync(documentsDir)) {
   process.exit(1);
 }
 
-const names = fs.readdirSync(documentsDir, { withFileTypes: true })
-  .filter((entry) => entry.isDirectory())
-  .map((entry) => entry.name)
-  .filter((name) => fs.existsSync(path.join(documentsDir, name, 'document.config.json')))
-  .sort();
+// サブフォルダも再帰的に探索する(文書名は documentsDir からの相対パス。
+// 例: "team-a/report")。document.config.json を持つフォルダが文書で、
+// その中はそれ以上探索しない(文書の中に別の文書は置けない)。
+function collectDocuments(dir, prefix, names) {
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    if (!entry.isDirectory()) {
+      continue;
+    }
+    const name = prefix === '' ? entry.name : `${prefix}/${entry.name}`;
+    if (fs.existsSync(path.join(dir, entry.name, 'document.config.json'))) {
+      names.push(name);
+    } else {
+      collectDocuments(path.join(dir, entry.name), name, names);
+    }
+  }
+}
+
+const names = [];
+collectDocuments(documentsDir, '', names);
+names.sort();
 
 if (names.length === 0) {
   console.error(`エラー: ${documentsDirName}/ に文書がありません(${documentsDirName}/<文書名>/document.config.json が見つかりません)。`);
