@@ -1,20 +1,34 @@
 #!/bin/sh
 # 使い方: ./build-pdf.sh <文書名>|--all
-#   文書名  → documents/<文書名>/document.config.json の設定でビルドする
-#   --all   → documents/ 配下のすべての文書を順番にビルドする
+#   文書名  → 文書フォルダ(既定 documents/)配下の <文書名>/document.config.json でビルドする
+#   --all   → 文書フォルダ配下のすべての文書を順番にビルドする
 #   例: ./build-pdf.sh project-document
+# 文書フォルダの場所は kit.config.json の "documentsDir" で変更できる。
 set -eu
 
 cd "$(dirname "$0")"
 
+if ! command -v node >/dev/null 2>&1; then
+    echo "エラー: Node.jsが見つかりません。初回セットアップ手順を確認してください。" >&2
+    exit 1
+fi
+
+if ! command -v npm >/dev/null 2>&1; then
+    echo "エラー: npmが見つかりません。Node.jsのインストール状態を確認してください。" >&2
+    exit 1
+fi
+
+# 文書フォルダのルート(kit.config.json の documentsDir、既定 documents)
+docdir=$(node scripts/print-documents-dir.js)
+
 show_documents() {
-    if [ -d documents ]; then
-        echo "documents/ にある文書:" >&2
-        for dir in documents/*/; do
+    if [ -d "$docdir" ]; then
+        echo "$docdir/ にある文書:" >&2
+        for dir in "$docdir"/*/; do
             [ -f "${dir}document.config.json" ] && echo "  - $(basename "$dir")" >&2
         done
     else
-        echo "documents/ フォルダがまだありません。documents/<文書名>/document.config.json を作成してください。" >&2
+        echo "$docdir/ フォルダがまだありません。$docdir/<文書名>/document.config.json を作成してください。" >&2
     fi
 }
 
@@ -31,23 +45,13 @@ case "$arg" in
         exit 1
         ;;
     *)
-        if [ ! -f "documents/$arg/document.config.json" ]; then
-            echo "エラー: 文書 '$arg' が見つかりません(documents/$arg/document.config.json がありません)。" >&2
+        if [ ! -f "$docdir/$arg/document.config.json" ]; then
+            echo "エラー: 文書 '$arg' が見つかりません($docdir/$arg/document.config.json がありません)。" >&2
             show_documents
             exit 1
         fi
         ;;
 esac
-
-if ! command -v node >/dev/null 2>&1; then
-    echo "エラー: Node.jsが見つかりません。初回セットアップ手順を確認してください。" >&2
-    exit 1
-fi
-
-if ! command -v npm >/dev/null 2>&1; then
-    echo "エラー: npmが見つかりません。Node.jsのインストール状態を確認してください。" >&2
-    exit 1
-fi
 
 if [ ! -d "node_modules" ]; then
     echo "node_modules が見つからないため、依存パッケージをインストールします。"
@@ -79,5 +83,5 @@ if [ "$build_all" = true ]; then
 else
     build_one "$arg"
     echo ""
-    echo "PDF生成が完了しました。出力先は documents/$arg/document.config.json の output を確認してください。"
+    echo "PDF生成が完了しました。出力先は $docdir/$arg/document.config.json の output を確認してください。"
 fi

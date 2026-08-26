@@ -18,6 +18,7 @@ template/
 ├── build-pdf.ps1        # PDF生成(Windows / PowerShell)
 ├── setup-docs.sh        # 初回セットアップ(Linux・Mac / シェル)
 ├── build-pdf.sh         # PDF生成(Linux・Mac / シェル)
+├── kit.config.json      # キット全体の設定(文書フォルダの場所の変更など)
 ├── documents/           # 文書フォルダ(1文書=1フォルダ。原稿Markdown+document.config.json)
 │   ├── project-document/    # 既定の文書
 │   └── sample-*/            # 機能の見本(README付き。不要なら削除可)

@@ -1,7 +1,8 @@
 ﻿# 使い方: .\build-pdf.ps1 <文書名>  または  .\build-pdf.ps1 -All
-#   文書名 → documents/<文書名>/document.config.json の設定でビルドする
-#   -All   → documents/ 配下のすべての文書を順番にビルドする
+#   文書名 → 文書フォルダ(既定 documents/)配下の <文書名>/document.config.json でビルドする
+#   -All   → 文書フォルダ配下のすべての文書を順番にビルドする
 #   例: .\build-pdf.ps1 project-document
+# 文書フォルダの場所は kit.config.json の "documentsDir" で変更できる。
 param(
     [Parameter(Position = 0)]
     [string]$Document,
@@ -17,26 +18,8 @@ function Test-CommandExists {
     return [bool](Get-Command $Name -ErrorAction SilentlyContinue)
 }
 
-function Get-DocumentListText {
-    if (Test-Path "documents") {
-        $names = Get-ChildItem documents -Directory |
-            Where-Object { Test-Path (Join-Path $_.FullName "document.config.json") } |
-            ForEach-Object { "  - $($_.Name)" }
-        return "documents/ にある文書:`n" + ($names -join "`n")
-    }
-    return "documents/ フォルダがまだありません。documents/<文書名>/document.config.json を作成してください。"
-}
-
 if ($All -and $Document) {
     Write-Error "-All と文書名は同時に指定できません。"
-}
-
-if (-not $All -and -not $Document) {
-    Write-Error ("ビルドする文書を指定してください。`n使い方: .\build-pdf.ps1 <文書名>  または  .\build-pdf.ps1 -All`n" + (Get-DocumentListText))
-}
-
-if ($Document -and -not (Test-Path "documents/$Document/document.config.json" -PathType Leaf)) {
-    Write-Error ("文書 '$Document' が見つかりません(documents/$Document/document.config.json がありません)。`n" + (Get-DocumentListText))
 }
 
 if (-not (Test-CommandExists "node")) {
@@ -45,6 +28,30 @@ if (-not (Test-CommandExists "node")) {
 
 if (-not (Test-CommandExists "npm")) {
     Write-Error "npmが見つかりません。Node.jsのインストール状態を確認してください。"
+}
+
+# 文書フォルダのルート(kit.config.json の documentsDir、既定 documents)
+$DocumentsDir = node scripts/print-documents-dir.js
+if ($LASTEXITCODE -ne 0) {
+    Write-Error "文書フォルダの設定の読み込みに失敗しました。上のエラーメッセージを確認してください。"
+}
+
+function Get-DocumentListText {
+    if (Test-Path $DocumentsDir) {
+        $names = Get-ChildItem $DocumentsDir -Directory |
+            Where-Object { Test-Path (Join-Path $_.FullName "document.config.json") } |
+            ForEach-Object { "  - $($_.Name)" }
+        return "$DocumentsDir/ にある文書:`n" + ($names -join "`n")
+    }
+    return "$DocumentsDir/ フォルダがまだありません。$DocumentsDir/<文書名>/document.config.json を作成してください。"
+}
+
+if (-not $All -and -not $Document) {
+    Write-Error ("ビルドする文書を指定してください。`n使い方: .\build-pdf.ps1 <文書名>  または  .\build-pdf.ps1 -All`n" + (Get-DocumentListText))
+}
+
+if ($Document -and -not (Test-Path "$DocumentsDir/$Document/document.config.json" -PathType Leaf)) {
+    Write-Error ("文書 '$Document' が見つかりません($DocumentsDir/$Document/document.config.json がありません)。`n" + (Get-DocumentListText))
 }
 
 if (-not (Test-Path "node_modules")) {
@@ -63,7 +70,7 @@ if ($All) {
     # 一括ビルドの前に文書一覧を取得し、output の重複などを検証する
     $documents = @(node scripts/list-documents.js)
     if ($LASTEXITCODE -ne 0) {
-        Write-Error "documents/ の文書一覧の取得に失敗しました。上のエラーメッセージを確認してください。"
+        Write-Error "文書一覧の取得に失敗しました。上のエラーメッセージを確認してください。"
     }
 } else {
     $documents = @($Document)
@@ -94,5 +101,5 @@ if ($All) {
     Write-Host "全文書のPDF生成が完了しました:"
     $documents | ForEach-Object { Write-Host "  - $_" }
 } else {
-    Write-Host "PDF生成が完了しました。出力先は documents/$Document/document.config.json の output を確認してください。"
+    Write-Host "PDF生成が完了しました。出力先は $DocumentsDir/$Document/document.config.json の output を確認してください。"
 }

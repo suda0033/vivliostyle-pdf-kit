@@ -238,6 +238,20 @@ Linux・Mac:
 - 組版に使うCSSは設定の `"styles"` で指定できます(未指定なら `styles/document.css`)。`styles/themes/` のテーマに切り替える場合も、ここで `["styles/themes/theme-b-formal.css"]` のように指定します。文書ごとに別のCSSを指定できます。
 - プレビュー(`npm run preview`)で文書を指定する場合は、環境変数 `DOC_CONFIG` に文書名を設定します(PowerShell: `$env:DOC_CONFIG="report"; npm run preview`。終わったら `Remove-Item Env:DOC_CONFIG`。Linux・Mac: `DOC_CONFIG=report npm run preview`)。
 
+### 文書フォルダの場所を変える(kit.config.json)
+
+プロジェクトの規約で文書の置き場所が決まっている場合(例: 仕様書は `docs/` に置く)、`documents/` の代わりに任意のフォルダを文書フォルダのルートにできます。テンプレートのフォルダにある `kit.config.json` の `"documentsDir"` を書き換えます。
+
+```json
+{
+  "documentsDir": "docs/specs"
+}
+```
+
+- 以後、`.\build-pdf.ps1 report` は `docs/specs/report/document.config.json` を、`-All` / `--all` は `docs/specs/` 配下の全文書をビルドします。フォルダの中の構造(1文書=1フォルダ、`document.config.json`+原稿)は変わりません。
+- パスはテンプレートのフォルダ(`kit.config.json` がある場所)基準で、**テンプレートのフォルダ内**に限ります。`../` や絶対パスで外を指すとエラーになります(フォント・CSS・画像のコピーがテンプレートのフォルダ基準のため)。
+- 各文書の `document.config.json` 内のパスの規則(テンプレートのフォルダ基準)も変わりません。
+
 ## HTMLとCSSで独自のレイアウトを作る
 
 原稿のMarkdownにはHTMLをそのまま書けます。HTMLにクラス名を付け、そのクラスの見た目を `styles/document.css` に書き足せば、Markdownの標準記法にないレイアウト(横並びの表、色付きの枠、幅を固定した箱など)を自由に作れます。上の「ドキュメント情報の表」や「注意書きボックス」もこの仕組みで作られています。

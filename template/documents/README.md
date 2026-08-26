@@ -35,3 +35,7 @@ documents/
 
 - `document.config.json` の中のパス(`output`、`fonts`、`styles` など)は、文書フォルダではなく**テンプレートのフォルダ基準**で書きます。そのため `fonts/` や `styles/` は全文書で共有できます。
 - 原稿フォルダは既定で文書自身のフォルダです。別の場所に置く場合のみ `"sourceDir"` を指定します([../manuals/OPTIONS.md](../manuals/OPTIONS.md) 参照)。
+
+## 文書フォルダの場所を変える
+
+プロジェクトの規約に合わせて、`documents/` の代わりに別のフォルダ(例: `docs/specs`)を文書フォルダのルートにできます。`kit.config.json` の `"documentsDir"` で指定します([../manuals/OPTIONS.md](../manuals/OPTIONS.md) の「文書フォルダの場所を変える」参照)。
