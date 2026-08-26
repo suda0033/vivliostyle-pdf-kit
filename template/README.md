@@ -38,6 +38,23 @@
 
 `[生成物]` のフォルダは手で編集せず、Gitにもコミットしません(`.gitignore` で除外済み)。普段編集するのは `documents/` 配下と、見た目を変えるときの `styles/` だけです。文書フォルダの場所を `documents/` から変える方法は [manuals/OPTIONS.md](manuals/OPTIONS.md) の「文書フォルダの場所を変える」を参照してください。
 
+### どれが必須で、どれを変えてよいか
+
+| 分類 | 対象 | 備考 |
+| --- | --- | --- |
+| **必須(名前固定)** | `vivliostyle.config.js`、`package.json`、`package-lock.json`、`scripts/`(中のファイルを含む) | ビルドの仕組みがこの名前で参照します。改名・削除しないでください |
+| **必須(名前固定)** | 各文書フォルダの `document.config.json` | 文書ごとに1つ必須。このファイルを持つフォルダが「文書」と認識されます |
+| **必須(実行の入り口)** | `build-pdf.ps1` / `build-pdf.sh`、`setup-docs.ps1` / `setup-docs.sh` | マニュアルがこの名前で手順を案内しています |
+| **任意(置く場合は名前固定)** | `kit.config.json` | 無くても動きます(文書フォルダは既定の `documents/`)。文書フォルダの場所を変えるときだけ使います |
+| **変更・改名可** | このフォルダ自体 | 自由に改名できます(冒頭の説明を参照) |
+| **変更・改名可** | `documents/` | `kit.config.json` の `"documentsDir"` で場所・名前を変更できます |
+| **変更・改名可** | 文書フォルダ(`project-document/` など)と原稿の `*.md` | フォルダ名がそのまま文書名になります(スペース入りは不可)。原稿のファイル名は `document.config.json` の `"files"` と合わせます |
+| **変更・改名可** | `styles/` のCSS | `document.config.json` の `"styles"` で指定すれば別名・追加も可能です。未指定の文書は `styles/document.css` を使うため、このファイルだけは既定名のまま残してください |
+| **変更・改名可** | `fonts/` | `document.config.json` の `"fonts"` のパスと合わせます。同梱フォントを使わないなら削除できます(`OFL.txt` は同梱フォントのライセンスなので、フォントと一緒に扱ってください) |
+| **削除可** | `assets/`、`documents/sample-*/`、各READMEと `manuals/` | 使わなければ削除できます(マニュアル類は残しておくことを推奨) |
+| **削除可** | `.gitignore` | Gitで管理しない場合は削除できます |
+| **生成物** | `node_modules/`、`.vivliostyle/`、`dist/` | 手で編集せず、コミットもしません。削除しても次のセットアップ・ビルドで作り直されます |
+
 ## マニュアル
 
 目的に応じて `manuals/` の中の該当するファイルを参照してください。
