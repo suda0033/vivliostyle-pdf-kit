@@ -24,6 +24,17 @@ function getDocumentsDir(baseDir) {
   return relative.split(path.sep).join('/');
 }
 
+// 文書フォルダ名の検証。スペース(半角・全角・タブ)入りの名前は
+// build-pdf.sh の一括ビルドで正しく扱えないため、どの経路でも一律にエラーにする。
+function assertValidDocumentName(name, documentsDir) {
+  if (/[ \t　]/.test(name)) {
+    const suggestion = name.replace(/[ \t　]+/g, '-');
+    throw new Error(
+      `文書フォルダ名 '${name}' にはスペースを使えません。'${documentsDir}/${suggestion}' のようにスペースなしの名前に変更してください。`,
+    );
+  }
+}
+
 // 環境変数 DOC_CONFIG(文書名)から設定ファイルの絶対パスを解決する。
 // 文書は <documentsDir>/<文書名>/ フォルダに置き、設定はその中の document.config.json。
 // build-pdf.ps1 / build-pdf.sh も同じ規則で文書名を解決する。
@@ -35,6 +46,7 @@ function resolveDocConfig(baseDir) {
     );
   }
   const documentsDir = getDocumentsDir(baseDir);
+  assertValidDocumentName(name, documentsDir);
   const configPath = path.resolve(baseDir, documentsDir, name, 'document.config.json');
   if (!fs.existsSync(configPath)) {
     throw new Error(`文書 '${name}' が見つかりません(${documentsDir}/${name}/document.config.json がありません)。`);
@@ -42,4 +54,4 @@ function resolveDocConfig(baseDir) {
   return configPath;
 }
 
-module.exports = { getDocumentsDir, resolveDocConfig };
+module.exports = { getDocumentsDir, resolveDocConfig, assertValidDocumentName };

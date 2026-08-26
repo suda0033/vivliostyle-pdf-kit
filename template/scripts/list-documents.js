@@ -4,7 +4,7 @@
 // (重複したまま一括ビルドすると、後の文書が前の文書のPDFを上書きしてしまうため)。
 const fs = require('node:fs');
 const path = require('node:path');
-const { getDocumentsDir } = require('./resolve-config');
+const { getDocumentsDir, assertValidDocumentName } = require('./resolve-config');
 
 const root = process.cwd();
 
@@ -31,6 +31,15 @@ const names = fs.readdirSync(documentsDir, { withFileTypes: true })
 if (names.length === 0) {
   console.error(`エラー: ${documentsDirName}/ に文書がありません(${documentsDirName}/<文書名>/document.config.json が見つかりません)。`);
   process.exit(1);
+}
+
+for (const name of names) {
+  try {
+    assertValidDocumentName(name, documentsDirName);
+  } catch (error) {
+    console.error(`エラー: ${error.message}`);
+    process.exit(1);
+  }
 }
 
 const outputs = new Map();
