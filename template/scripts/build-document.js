@@ -124,8 +124,28 @@ function renderMermaid(source, sourceName) {
     { cwd: root, stdio: 'inherit', shell: process.platform === 'win32' },
   );
 
+  setSvgIntrinsicSize(svgFile);
+
   // バンドルからの相対パスで参照する
   return toPosixPath(path.relative(generatedDir, svgFile));
+}
+
+// mmdcが出力するSVGのルートは width="100%" で高さ属性を持たない。
+// このままでは<img>が固有サイズを持たず、小さな図でも段幅いっぱいに
+// 引き伸ばされてしまうため、viewBoxの値を実寸(px)として書き込む。
+function setSvgIntrinsicSize(svgFile) {
+  const svg = fs.readFileSync(svgFile, 'utf8');
+  const viewBox = /viewBox="0 0 ([\d.]+) ([\d.]+)"/.exec(svg);
+  if (!viewBox || !svg.includes('width="100%"')) {
+    return;
+  }
+  const width = Math.round(Number(viewBox[1]));
+  const height = Math.round(Number(viewBox[2]));
+  fs.writeFileSync(
+    svgFile,
+    svg.replace('width="100%"', `width="${width}" height="${height}"`),
+    'utf8',
+  );
 }
 
 // コードフェンスを状態管理しながら1ファイル分を処理する。
@@ -153,7 +173,9 @@ function processMarkdown(markdown, entry, fileDir) {
       ) {
         if (fence.isMermaid) {
           const svgPath = renderMermaid(mermaidLines.join('\n'), entry.file);
-          output.push(`![Mermaid diagram](${svgPath})`);
+          // ![alt](...) と書くとVFMがaltをそのままfigcaptionにしてしまい、
+          // 図の下に "Mermaid diagram" と印字される。figureを直接書いて避ける。
+          output.push('', `<figure><img src="${svgPath}" alt="Mermaid diagram"></figure>`, '');
           mermaidLines = null;
         } else {
           output.push(line);

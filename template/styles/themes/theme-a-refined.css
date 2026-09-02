@@ -364,9 +364,14 @@ pre code {
 
 /* 図 */
 
+/* 図はページ領域(vh = 組版領域の高さ)を超えないよう縮小する。
+   break-inside: avoid で分割できないため、上限が無いとページから
+   はみ出した部分が黙って切り捨てられる */
 img,
 svg {
   max-width: 100%;
+  max-height: 75vh;
+  width: auto;
   height: auto;
   break-inside: avoid;
 }
