@@ -1,0 +1,22 @@
+/* 利用者用のスタイル調整ファイル。
+   見た目を変えたいときは document.css やテーマCSSを直接編集せず、
+   このファイルに書き足してください。
+
+   このファイルは document.config.json の "styles" の指定にかかわらず、
+   常に最後に読み込まれます(同じセレクタなら、ここに書いた値が優先されます)。
+   キットのアップデートで上書きされないため、変更がそのまま残ります
+   (manuals/UPDATE.md 参照)。
+
+   例: 本文の文字サイズを変える
+
+   body {
+     font-size: 11pt;
+   }
+
+   例: 独自レイアウト用のクラス(manuals/OPTIONS.md「HTMLとCSSで独自のレイアウトを作る」)
+
+   .two-columns {
+     display: flex;
+     gap: 6mm;
+   }
+*/

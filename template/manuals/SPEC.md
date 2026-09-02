@@ -10,7 +10,7 @@
 2. `vivliostyle build` — バンドルをCSS組版してPDFを生成する。
 3. `scripts/add-form-fields.js` — 原稿に `pdf-field://` リンクがあれば、その位置に入力フォームを追加する(無ければ何もしない)。
 
-ビルド対象の文書は `build-pdf.ps1 <文書名>` / `build-pdf.sh <文書名>` で指定し、設定ファイルは `documents/<文書名>/document.config.json` です(文書フォルダのルートは `kit.config.json` の `"documentsDir"` で変更可。テンプレートのフォルダ内に限る)。内部では環境変数 `DOC_CONFIG` に文書名が入り、`scripts/resolve-config.js` が3段階すべてで同じ規則で設定ファイルに解決します(`npm run preview` にも効きます)。文書名は文書フォルダのルートからの相対パスで、サブフォルダによる分類(例: `team-a/report`)もできます。一括ビルド(`-All` / `--all`)は、`scripts/list-documents.js` が文書フォルダ配下を再帰的に探索して文書名を列挙・検証(`output` の重複チェック)した一覧を、ラッパーが1文書ずつ順にビルドします。`document.config.json` を持つフォルダより下は探索されず、文書フォルダの中に別の文書を置くことはできません(名前指定でもエラーになります)。組版に使うCSSは設定の `"styles"`(既定 `["styles/document.css"]`)が `vivliostyle.config.js` の `theme` になります。原稿フォルダは設定の `"sourceDir"`(既定は文書自身のフォルダ)で、`files` の各ファイルはそこからの相対パスで解決されます。
+ビルド対象の文書は `build-pdf.ps1 <文書名>` / `build-pdf.sh <文書名>` で指定し、設定ファイルは `documents/<文書名>/document.config.json` です(文書フォルダのルートは `kit.config.json` の `"documentsDir"` で変更可。テンプレートのフォルダ内に限る)。内部では環境変数 `DOC_CONFIG` に文書名が入り、`scripts/resolve-config.js` が3段階すべてで同じ規則で設定ファイルに解決します(`npm run preview` にも効きます)。文書名は文書フォルダのルートからの相対パスで、サブフォルダによる分類(例: `team-a/report`)もできます。一括ビルド(`-All` / `--all`)は、`scripts/list-documents.js` が文書フォルダ配下を再帰的に探索して文書名を列挙・検証(`output` の重複チェック)した一覧を、ラッパーが1文書ずつ順にビルドします。`document.config.json` を持つフォルダより下は探索されず、文書フォルダの中に別の文書を置くことはできません(名前指定でもエラーになります)。組版に使うCSSは設定の `"styles"`(既定 `["styles/document.css"]`)に `styles/custom.css` を末尾に加えたものが `vivliostyle.config.js` の `theme` になります(「CSSの読み込み順」参照)。原稿フォルダは設定の `"sourceDir"`(既定は文書自身のフォルダ)で、`files` の各ファイルはそこからの相対パスで解決されます。
 
 `.vivliostyle/generated/` は文書間で共有されるため、ビルドのたびに削除して作り直されます(前回ビルドした別文書のMermaid SVGなどが混ざりません)。
 
@@ -58,3 +58,7 @@
 ## PDF入力フォームの仕組み
 
 `<a class="pdf-field" href="pdf-field://名前"></a>` と書いた要素は、Chromiumの印刷時に位置矩形付きのリンク注釈としてPDFに残ります。ビルド後処理 `scripts/add-form-fields.js` がこの注釈を検出して削除し、同じ位置に入力フィールド(AcroForm)を重ねます。座標計算をしないため、表のレイアウトを変えてもズレません。使い方は [OPTIONS.md](OPTIONS.md) の「ドキュメント情報の表を資料冒頭に入れる」を参照。
+
+## CSSの読み込み順
+
+組版に使うCSSは `document.config.json` の `"styles"`(未指定なら `styles/document.css`)です。これに加えて、`styles/custom.css` が存在すれば `vivliostyle.config.js` が**常に末尾に追加**します(`"styles"` に自分で含めている場合は二重に追加しません)。後に読み込まれたCSSが同じセレクタの値を上書きするため、利用者の調整を `custom.css` に集めておけば、キットの `document.css` やテーマCSSをアップデートで差し替えても調整が残ります([UPDATE.md](UPDATE.md) 参照)。`custom.css` を削除した場合は何も追加されません。

@@ -29,7 +29,7 @@ Linux・Mac:
 | キー | このサンプルでの値 | 意味 |
 | --- | --- | --- |
 | `output` | `dist/cover-doc-info-sample.pdf` | 出力先(他の文書と別名) |
-| `styles` | (未指定) | `styles/document.css` のみ。追加CSSは不要 |
+| `styles` | (未指定) | 既定(`styles/document.css` + `styles/custom.css`)。追加CSSは不要 |
 
 ## 表の組み方(00-cover.md)
 

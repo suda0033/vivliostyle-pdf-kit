@@ -44,7 +44,7 @@ VivliostyleはPDF生成時にローカルサーバーを使うため、複数の
 | `documents/<文書名>/document.config.json` | 文書タイトル、出力先、結合順、フォント、フッター |
 | `assets/` | 画像、SVG、Mermaid元ファイル |
 | `fonts/` | 文書で使うフォント(Noto Sans JPを同梱) |
-| `styles/document.css` | PDFの見た目 |
+| `styles/custom.css` | PDFの見た目の調整(自分の変更はここに書く。キットの `document.css` は編集しない) |
 
 ## Markdownファイルを追加した場合
 
@@ -158,6 +158,6 @@ A4の本文が入る範囲は**幅174mm × 高さ255mm**(既定の余白の場�
 ## 基本ルール
 
 - 内容を直す場合は `documents/<文書名>/` のMarkdownを編集します。
-- 見た目を直す場合は `styles/document.css` を編集します。
+- 見た目を直す場合は `styles/custom.css` に書き足します。`styles/document.css` やテーマCSSはキットのファイルなので直接編集しません(`custom.css` は常に最後に読み込まれるので、同じセレクタを書けば上書きできます。こうしておくとキットのアップデートが上書きだけで済みます。[UPDATE.md](UPDATE.md) 参照)。
 - PDFを直接編集せず、MarkdownやCSSを更新してから再生成します。
 - `node_modules/` や `.vivliostyle/` は生成物です。手で編集しません。

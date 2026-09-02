@@ -94,7 +94,7 @@
 - `center`: 中央下の文字列。**未指定ならページ番号**が出ます(既定)。指定するとページ番号の代わりにその文字列が出ます。
 - 表紙(`<section class="cover">` のページ)には、ページ番号と同様に表示されません。
 - スタイルシート側が同じ位置に何かを出している場合(例: `styles/themes/theme-d-compact.css` は右下にページ番号)、この設定が優先されます。
-- 文字色やサイズを変えたい場合は、`styles/document.css` の `@page` に `@bottom-left` などを直接書いて調整してください。
+- 文字色やサイズを変えたい場合は、`styles/custom.css` に `@page { @bottom-left { ... } }` のように書いて調整してください(`styles/document.css` の `@page` ブロックが参考になります)。
 
 ## ドキュメント情報の表を資料冒頭に入れる(PDF入力フォーム付き)
 
@@ -143,7 +143,7 @@
 
 - 記入欄にしたいセルには `<a class="pdf-field" href="pdf-field://名前"></a>` を書きます。`名前` は識別名で紙面には出ません(英数字推奨)。同じ名前のセルは入力値が共有されます。
 - 固定で表示したい値は `<td>` に直接書きます。役割(作成・更新・確認など)の増減は列の増減だけです。
-- 表に付けるクラスで幅と色を組み合わせられます(数値や色は `styles/document.css` の「ドキュメント情報の表」ブロックで調整)。
+- 表に付けるクラスで幅と色を組み合わせられます(数値や色を変えるときは、`styles/document.css` の「ドキュメント情報の表」ブロックを参考に `styles/custom.css` で上書き)。
   - `doc-info-right`: 幅80mm+赤系の配色(承認欄向け)
   - `doc-info-small`: 幅26mm(全体の約15%。版数などの小さな箱)
   - `doc-info-full`: 次の行に送って全幅にする(表が幅を超えた場合も自動で折り返します)
@@ -236,7 +236,7 @@ Linux・Mac:
 - 一括ビルドは `documents/` 配下の文書フォルダ(`document.config.json` があるもの)をサブフォルダも含めて探索し、アルファベット順に1つずつビルドします。途中の文書が失敗するとそこで停止します。
 - 文書はサブフォルダで分類できます(例: `documents/team-a/report/` → 文書名は `team-a/report`)。文書フォルダの中に別の文書は置けません。詳しくは [documents/README.md](../documents/README.md) を参照してください。
 - `output` は文書ごとに別名にしてください(同じだと上書きされます)。一括ビルドでは開始前に重複をチェックし、重複があればエラーで停止します。
-- 組版に使うCSSは設定の `"styles"` で指定できます(未指定なら `styles/document.css`)。`styles/themes/` のテーマに切り替える場合も、ここで `["styles/themes/theme-b-formal.css"]` のように指定します。文書ごとに別のCSSを指定できます。
+- 組版に使うCSSは設定の `"styles"` で指定できます(未指定なら `styles/document.css`)。`styles/themes/` のテーマに切り替える場合も、ここで `["styles/themes/theme-b-formal.css"]` のように指定します。文書ごとに別のCSSを指定できます。自分の調整用の `styles/custom.css` は、この指定の有無にかかわらず常に最後に読み込まれます。
 - プレビュー(`npm run preview`)で文書を指定する場合は、環境変数 `DOC_CONFIG` に文書名を設定します(PowerShell: `$env:DOC_CONFIG="report"; npm run preview`。終わったら `Remove-Item Env:DOC_CONFIG`。Linux・Mac: `DOC_CONFIG=report npm run preview`)。
 
 ### 文書フォルダの場所を変える(kit.config.json)
@@ -255,7 +255,7 @@ Linux・Mac:
 
 ## HTMLとCSSで独自のレイアウトを作る
 
-原稿のMarkdownにはHTMLをそのまま書けます。HTMLにクラス名を付け、そのクラスの見た目を `styles/document.css` に書き足せば、Markdownの標準記法にないレイアウト(横並びの表、色付きの枠、幅を固定した箱など)を自由に作れます。上の「ドキュメント情報の表」や「注意書きボックス」もこの仕組みで作られています。
+原稿のMarkdownにはHTMLをそのまま書けます。HTMLにクラス名を付け、そのクラスの見た目を `styles/custom.css` に書き足せば、Markdownの標準記法にないレイアウト(横並びの表、色付きの枠、幅を固定した箱など)を自由に作れます。上の「ドキュメント情報の表」や「注意書きボックス」もこの仕組みで作られています。
 
 手順は2つです。
 
@@ -272,7 +272,7 @@ Linux・Mac:
    </div>
    ```
 
-2. `styles/document.css` の末尾に、そのクラスの見た目を書く
+2. `styles/custom.css` に、そのクラスの見た目を書く
 
    ```css
    .two-columns {

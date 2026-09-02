@@ -32,7 +32,7 @@ Linux・Mac:
 | --- | --- | --- |
 | `footer.left` | `© 2026 開発チーム` | 左下のコピーライト。`center` は未指定なのでページ番号が出る |
 | `output` | `dist/doc-info-version-sample.pdf` | 出力先(他の文書と別名) |
-| `styles` | (未指定) | `styles/document.css` のみ。ヘッダー表は使わない |
+| `styles` | (未指定) | 既定(`styles/document.css` + `styles/custom.css`)。ヘッダー表は使わない |
 
 ## 表の組み方(01-overview.md)
 
@@ -44,7 +44,7 @@ Linux・Mac:
 | 版数 | `doc-info-small doc-info-accent` | `doc-info-small` が幅(約15%)、`doc-info-accent` が赤系の配色。クラスは組み合わせて使う |
 | 承認欄 | `doc-info-full` | 次の行に送って全幅にする。色の指定なし=標準色 |
 
-幅(`26mm`)や色は `styles/document.css` の「ドキュメント情報の表」ブロックで調整します。
+幅(`26mm`)や色を変えるときは、`styles/document.css` の「ドキュメント情報の表」ブロックを参考に `styles/custom.css` で上書きします。
 
 ## 自分の文書に組み込むには
 
